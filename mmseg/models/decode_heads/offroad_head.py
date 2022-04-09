@@ -60,7 +60,7 @@ class PPM(nn.ModuleList):
 
 
 @HEADS.register_module()
-class PSPHead(BaseDecodeHead):
+class OffRoadHead(BaseDecodeHead):
     """Pyramid Scene Parsing Network.
 
     This head is the implementation of
@@ -72,7 +72,7 @@ class PSPHead(BaseDecodeHead):
     """
 
     def __init__(self, pool_scales=(1, 2, 3, 6), **kwargs):
-        super(PSPHead, self).__init__(**kwargs)
+        super(OffRoadHead, self).__init__(**kwargs)
         assert isinstance(pool_scales, (list, tuple))
         self.pool_scales = pool_scales
         self.psp_modules = PPM(
