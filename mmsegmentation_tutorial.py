@@ -36,8 +36,8 @@ config_file = 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
 checkpoint_file = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
 # build the model from a config file and a checkpoint file
-# model = init_segmentor(config_file, checkpoint_file, device='cuda:0')
-model = init_segmentor(config_file, checkpoint_file, device='cpu')
+model = init_segmentor(config_file, checkpoint_file, device='cuda:0')
+# model = init_segmentor(config_file, checkpoint_file, device='cpu')
 
 # test a single image
 img = 'demo/demo.png'
@@ -134,6 +134,7 @@ from mmseg.datasets.builder import DATASETS
 from mmseg.datasets.custom import CustomDataset
 
 
+# TODO: Uncomment if you get data error
 @DATASETS.register_module()
 class StanfordBackgroundDataset(CustomDataset):
     CLASSES = classes
@@ -146,14 +147,18 @@ class StanfordBackgroundDataset(CustomDataset):
 
 
 """### Create a config file
-In the next step, we need to modify the config for the training. To accelerate the process, we finetune the model from trained weights.
+In the next step, we need to modify the config for the training. 
+To accelerate the process, we fine tune the model from trained weights.
 """
 
 from mmcv import Config
 
 cfg = Config.fromfile('configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py')
 
-"""Since the given config is used to train PSPNet on the cityscapes dataset, we need to modify it accordingly for our new dataset.  """
+"""
+Since the given config is used to train PSPNet on the cityscapes dataset, 
+we need to modify it accordingly for our new dataset.  
+"""
 
 from mmseg.apis import set_random_seed
 
@@ -175,7 +180,10 @@ cfg.data.samples_per_gpu = 1
 cfg.data.workers_per_gpu = 1
 
 cfg.img_norm_cfg = dict(
-    mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+    mean=[123.675, 116.28, 103.53],
+    std=[58.395, 57.12, 57.375],
+    to_rgb=True)
+
 cfg.crop_size = (256, 256)
 cfg.train_pipeline = [
     dict(type='LoadImageFromFile'),
