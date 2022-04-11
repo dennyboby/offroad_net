@@ -21,12 +21,13 @@ We use PyTorch 1.10 and CUDA 11.1 for this tutorial. You may install other versi
 # Check Pytorch installation
 import torch, torchvision
 
-print(torch.__version__, torch.cuda.is_available())
+print(f"torch version: {torch.__version__}"
+      f"\ntorch.cuda.is_available(): {torch.cuda.is_available()}")
 
 # Check MMSegmentation installation
 import mmseg
 
-print(mmseg.__version__)
+print(f"mmseg version: {mmseg.__version__}")
 
 from mmseg.apis import inference_segmentor, init_segmentor, show_result_pyplot
 from mmseg.core.evaluation import get_palette
@@ -35,7 +36,8 @@ config_file = 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
 checkpoint_file = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
 # build the model from a config file and a checkpoint file
-model = init_segmentor(config_file, checkpoint_file, device='cuda:0')
+# model = init_segmentor(config_file, checkpoint_file, device='cuda:0')
+model = init_segmentor(config_file, checkpoint_file, device='cpu')
 
 # test a single image
 img = 'demo/demo.png'
@@ -156,6 +158,7 @@ cfg = Config.fromfile('configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py')
 from mmseg.apis import set_random_seed
 
 # Since we use only one GPU, BN is used instead of SyncBN
+# TODO: what cfg for CPU
 cfg.norm_cfg = dict(type='BN', requires_grad=True)
 cfg.model.backbone.norm_cfg = cfg.norm_cfg
 cfg.model.decode_head.norm_cfg = cfg.norm_cfg
