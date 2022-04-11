@@ -11,10 +11,7 @@
 module load cuda11.1/toolkit/11.1.1
 module load cudnn/8.1.1.33-11.2/3k5bbs63
 
-source /home/sskodate/py_venvs/py37_a100/bin/activate
+source /home/sskodate/py39_dl/bin/activate
 
-echo "Starting to run gen_labelled_cvat_xml"
-python gen_labelled_cvat_xml.py
-
-echo "Starting to run demo_modified"
-python demo_modified.py
+echo "Starting to run mmsegmentation_tutorial.py"
+python mmsegmentation_tutorial.py
