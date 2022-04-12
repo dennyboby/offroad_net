@@ -1,0 +1,37 @@
+Collections:
+- Name: OffRoadNet
+  Metadata:
+    Training Data:
+    - Cityscapes
+  Paper:
+    URL: https://arxiv.org/abs/1612.01105
+    Title: Pyramid Scene Parsing Network
+  README: configs/pspnet/README.md
+  Code:
+    URL: https://github.com/open-mmlab/mmsegmentation/blob/v0.17.0/mmseg/models/decode_heads/psp_head.py#L63
+    Version: v0.17.0
+  Converted From:
+    Code: https://github.com/hszhao/PSPNet
+Models:
+- Name: pspnet_r50-d8_512x1024_40k_cityscapes
+  In Collection: OffRoadNet
+  Metadata:
+    backbone: R-50-D8
+    crop size: (512,1024)
+    lr schd: 40000
+    inference time (ms/im):
+    - value: 245.7
+      hardware: V100
+      backend: PyTorch
+      batch size: 1
+      mode: FP32
+      resolution: (512,1024)
+    Training Memory (GB): 6.1
+  Results:
+  - Task: Semantic Segmentation
+    Dataset: Cityscapes
+    Metrics:
+      mIoU: 77.85
+      mIoU(ms+flip): 79.18
+  Config: configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py
+  Weights: https://download.openmmlab.com/mmsegmentation/v0.5/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth
