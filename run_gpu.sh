@@ -13,5 +13,5 @@ module load cudnn/8.1.1.33-11.2/3k5bbs63
 
 source /home/sskodate/py39_dl/bin/activate
 
-echo "Starting to run mmsegmentation_tutorial.py"
-python mmsegmentation_tutorial.py
+echo "Starting to run mmsegmentation_architecture.py"
+python mmsegmentation_architecture.py
