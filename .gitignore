@@ -118,3 +118,5 @@ mmseg/.mim
 # Pytorch
 *.pth
 /RUGD/
+.DS_Store
+configs/offroadnet/.DS_Store
