@@ -202,7 +202,7 @@ cfg.load_from = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_0033
 # Set up working dir to save files and logs.
 cfg.work_dir = './work_dirs/tutorial'
 
-cfg.runner.max_iters = 200
+cfg.runner.max_iters = 20
 cfg.log_config.interval = 10
 cfg.evaluation.interval = 200
 cfg.checkpoint_config.interval = 200
