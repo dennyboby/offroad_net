@@ -48,28 +48,29 @@ data_root = 'iccv09Data'
 img_dir = 'images'
 ann_dir = 'labels'
 
-# define class and plaette for better visualization
+# define class and palette for better visualization
 classes = ('sky', 'tree', 'road', 'grass', 'water', 'bldg', 'mntn', 'fg obj')
-palette = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34], 
+palette = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34],
            [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
 for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.regions.txt'):
-  seg_map = np.loadtxt(osp.join(data_root, ann_dir, file)).astype(np.uint8)
-  seg_img = Image.fromarray(seg_map).convert('P')
-  seg_img.putpalette(np.array(palette, dtype=np.uint8))
-  seg_img.save(osp.join(data_root, ann_dir, file.replace('.regions.txt', 
-                                                         '.png')))
+    seg_map = np.loadtxt(osp.join(data_root, ann_dir, file)).astype(np.uint8)
+    seg_img = Image.fromarray(seg_map).convert('P')
+    seg_img.putpalette(np.array(palette, dtype=np.uint8))
+    seg_img.save(osp.join(data_root, ann_dir, file.replace('.regions.txt',
+                                                           '.png')))
 
 # Let's take a look at the segmentation map we got
 import matplotlib.patches as mpatches
+
 img = Image.open('iccv09Data/labels/6000124.png')
 plt.figure(figsize=(8, 6))
 im = plt.imshow(np.array(img.convert('RGB')))
 
 # create a patch (proxy artist) for every color 
-patches = [mpatches.Patch(color=np.array(palette[i])/255., 
+patches = [mpatches.Patch(color=np.array(palette[i]) / 255.,
                           label=classes[i]) for i in range(8)]
 # put those patched as legend-handles into the legend
-plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0., 
+plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,
            fontsize='large')
 
 # plt.show()
@@ -84,12 +85,12 @@ mmcv.mkdir_or_exist(osp.join(data_root, split_dir))
 filename_list = [osp.splitext(filename)[0] for filename in mmcv.scandir(
     osp.join(data_root, ann_dir), suffix='.png')]
 with open(osp.join(data_root, split_dir, 'train.txt'), 'w') as f:
-  # select first 4/5 as train set
-  train_length = int(len(filename_list)*4/5)
-  f.writelines(line + '\n' for line in filename_list[:train_length])
+    # select first 4/5 as train set
+    train_length = int(len(filename_list) * 4 / 5)
+    f.writelines(line + '\n' for line in filename_list[:train_length])
 with open(osp.join(data_root, split_dir, 'val.txt'), 'w') as f:
-  # select last 1/5 as train set
-  f.writelines(line + '\n' for line in filename_list[train_length:])
+    # select last 1/5 as train set
+    f.writelines(line + '\n' for line in filename_list[train_length:])
 
 """
 After downloading the data, we need to implement `load_annotations` function in 
@@ -99,14 +100,16 @@ the new dataset class `StanfordBackgroundDataset`.
 from mmseg.datasets.builder import DATASETS
 from mmseg.datasets.custom import CustomDataset
 
+
 @DATASETS.register_module()
 class StanfordBackgroundDataset(CustomDataset):
-  CLASSES = classes
-  PALETTE = palette
-  def __init__(self, split, **kwargs):
-    super().__init__(img_suffix='.jpg', seg_map_suffix='.png', 
-                     split=split, **kwargs)
-    assert osp.exists(self.img_dir) and self.split is not None
+    CLASSES = classes
+    PALETTE = palette
+
+    def __init__(self, split, **kwargs):
+        super().__init__(img_suffix='.jpg', seg_map_suffix='.png',
+                         split=split, **kwargs)
+        assert osp.exists(self.img_dir) and self.split is not None
 
 
 """### Create a config file
@@ -139,7 +142,7 @@ cfg.dataset_type = 'StanfordBackgroundDataset'
 cfg.data_root = data_root
 
 cfg.data.samples_per_gpu = 8
-cfg.data.workers_per_gpu=8
+cfg.data.workers_per_gpu = 8
 
 cfg.img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
@@ -172,7 +175,6 @@ cfg.test_pipeline = [
             dict(type='Collect', keys=['img']),
         ])
 ]
-
 
 cfg.data.train.type = cfg.dataset_type
 cfg.data.train.data_root = cfg.data_root
@@ -221,7 +223,6 @@ from mmseg.datasets import build_dataset
 from mmseg.models import build_segmentor
 from mmseg.apis import train_segmentor
 
-
 # Build the dataset
 datasets = [build_dataset(cfg.data.train)]
 
@@ -233,7 +234,7 @@ model.CLASSES = datasets[0].CLASSES
 
 # Create work_dir
 mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
-train_segmentor(model, datasets, cfg, distributed=False, validate=True, 
+train_segmentor(model, datasets, cfg, distributed=False, validate=True,
                 meta=dict())
 img = mmcv.imread('iccv09Data/images/6000124.jpg')
 
