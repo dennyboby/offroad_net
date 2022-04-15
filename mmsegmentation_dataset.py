@@ -15,7 +15,7 @@ print(f"mmseg version: {mmseg.__version__}")
 from mmseg.apis import inference_segmentor, init_segmentor, show_result_pyplot
 from mmseg.core.evaluation import get_palette
 
-config_file = 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
+config_file = 'configs/pspnet/pspnet_r50-d8_550x688_26_rugd.py'
 checkpoint_file = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
 # build the model from a config file and a checkpoint file
@@ -45,7 +45,8 @@ import numpy as np
 from PIL import Image
 
 # convert dataset annotation to semantic segmentation map
-data_root = 'iccv09Data'
+# data_root = 'iccv09Data'
+data_root = constants.rugd_dir
 img_dir = 'images'
 ann_dir = 'labels'
 
@@ -53,6 +54,8 @@ ann_dir = 'labels'
 classes = ('sky', 'tree', 'road', 'grass', 'water', 'bldg', 'mntn', 'fg obj')
 palette = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34],
            [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
+
+
 for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.regions.txt'):
     seg_map = np.loadtxt(osp.join(data_root, ann_dir, file)).astype(np.uint8)
     seg_img = Image.fromarray(seg_map).convert('P')
@@ -102,13 +105,23 @@ from mmseg.datasets.builder import DATASETS
 from mmseg.datasets.custom import CustomDataset
 
 
+# @DATASETS.register_module()
+# class StanfordBackgroundDataset(CustomDataset):
+#     CLASSES = classes
+#     PALETTE = palette
+#
+#     def __init__(self, split, **kwargs):
+#         super().__init__(img_suffix='.jpg', seg_map_suffix='.png',
+#                          split=split, **kwargs)
+#         assert osp.exists(self.img_dir) and self.split is not None
+
 @DATASETS.register_module()
-class StanfordBackgroundDataset(CustomDataset):
-    CLASSES = classes
-    PALETTE = palette
+class RUGDDataset(CustomDataset):
+    CLASSES = constants.rugd_classes
+    PALETTE = constants.rugd_palette
 
     def __init__(self, split, **kwargs):
-        super().__init__(img_suffix='.jpg', seg_map_suffix='.png',
+        super().__init__(img_suffix='.png', seg_map_suffix='.png',
                          split=split, **kwargs)
         assert osp.exists(self.img_dir) and self.split is not None
 
@@ -139,7 +152,8 @@ cfg.model.decode_head.num_classes = 8
 cfg.model.auxiliary_head.num_classes = 8
 
 # Modify dataset type and path
-cfg.dataset_type = 'StanfordBackgroundDataset'
+# cfg.dataset_type = 'StanfordBackgroundDataset'
+cfg.dataset_type = 'RUGDDataset'
 cfg.data_root = data_root
 
 cfg.data.samples_per_gpu = 8
@@ -148,10 +162,11 @@ cfg.data.workers_per_gpu = 8
 cfg.img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 cfg.crop_size = (256, 256)
+img_scale = (320, 240)
 cfg.train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations'),
-    dict(type='Resize', img_scale=(320, 240), ratio_range=(0.5, 2.0)),
+    dict(type='Resize', img_scale=img_scale, ratio_range=(0.5, 2.0)),
     dict(type='RandomCrop', crop_size=cfg.crop_size, cat_max_ratio=0.75),
     dict(type='RandomFlip', flip_ratio=0.5),
     dict(type='PhotoMetricDistortion'),
@@ -165,7 +180,7 @@ cfg.test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(
         type='MultiScaleFlipAug',
-        img_scale=(320, 240),
+        img_scale=img_scale,
         # img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
         flip=False,
         transforms=[
