@@ -19,12 +19,12 @@ config_file = 'configs/pspnet/pspnet_r50-d8_550x688_26_rugd.py'
 checkpoint_file = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
 # build the model from a config file and a checkpoint file
-model = init_segmentor(config_file, checkpoint_file, device='cuda:0')
+# model = init_segmentor(config_file, checkpoint_file, device='cuda:0')
 # model = init_segmentor(config_file, checkpoint_file, device='cpu')
 
 # test a single image
-img = 'demo/demo.png'
-result = inference_segmentor(model, img)
+# img = 'demo/demo.png'
+# result = inference_segmentor(model, img)
 
 # show the results
 # show_result_pyplot(model, img, result, get_palette('cityscapes'))
@@ -51,18 +51,22 @@ img_dir = 'images'
 ann_dir = 'labels'
 
 # define class and palette for better visualization
-classes = ('sky', 'tree', 'road', 'grass', 'water', 'bldg', 'mntn', 'fg obj')
-palette = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34],
-           [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
+# classes = ('sky', 'tree', 'road', 'grass', 'water', 'bldg', 'mntn', 'fg obj')
+# palette = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34],
+#            [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
+classes = constants.rugd_classes
+palette = constants.rugd_palette
 
+# This code just scans the directory and creates a map based on the class color maps
+# This need not be run for RUGD as we already have what we need
+# for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.regions.txt'):
+#     seg_map = np.loadtxt(osp.join(data_root, ann_dir, file)).astype(np.uint8)
+#     seg_img = Image.fromarray(seg_map).convert('P')
+#     seg_img.putpalette(np.array(palette, dtype=np.uint8))
+#     seg_img.save(osp.join(data_root, ann_dir, file.replace('.regions.txt',
+#                                                            '.png')))
 
-for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.regions.txt'):
-    seg_map = np.loadtxt(osp.join(data_root, ann_dir, file)).astype(np.uint8)
-    seg_img = Image.fromarray(seg_map).convert('P')
-    seg_img.putpalette(np.array(palette, dtype=np.uint8))
-    seg_img.save(osp.join(data_root, ann_dir, file.replace('.regions.txt',
-                                                           '.png')))
-
+#
 # Let's take a look at the segmentation map we got
 import matplotlib.patches as mpatches
 
