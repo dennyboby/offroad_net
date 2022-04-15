@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH --job-name=mmseg
+#SBATCH --job-name=mmrugd
 #SBATCH -t 20:00:00
 #SBATCH -C P100
 #SBATCH --mem 80G
