@@ -2,6 +2,7 @@
 
 # Check Pytorch installation
 import torch, torchvision
+import constants
 
 print(f"torch version: {torch.__version__}"
       f"\ntorch.cuda.is_available(): {torch.cuda.is_available()}")
