@@ -120,3 +120,5 @@ mmseg/.mim
 /RUGD/
 .DS_Store
 configs/offroadnet/.DS_Store
+slurm*
+*.out
