@@ -87,14 +87,15 @@ palette = constants.rugd_palette
 split_dir = 'splits'
 mmcv.mkdir_or_exist(osp.join(data_root, split_dir))
 
-# split train/val set randomly
+# split train/val set randomly - done everytime - change it to do only once
 split_dir = 'splits'
+train_percent = 0.8
 mmcv.mkdir_or_exist(osp.join(data_root, split_dir))
 filename_list = [osp.splitext(filename)[0] for filename in mmcv.scandir(
     osp.join(data_root, ann_dir), suffix='.png')]
 with open(osp.join(data_root, split_dir, 'train.txt'), 'w') as f:
-    # select first 4/5 as train set
-    train_length = int(len(filename_list) * 4 / 5)
+    # select first 80% data as train set
+    train_length = int(len(filename_list) * train_percent)
     f.writelines(line + '\n' for line in filename_list[:train_length])
 with open(osp.join(data_root, split_dir, 'val.txt'), 'w') as f:
     # select last 1/5 as train set
@@ -166,7 +167,13 @@ cfg.data.workers_per_gpu = 8
 cfg.img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 cfg.crop_size = (256, 256)
-img_scale = (320, 240)
+
+# original size of the iccv09data image
+# img_scale = (320, 240)
+
+# Changing to original size of the rugd image
+img_scale = (688, 550)
+
 cfg.train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='LoadAnnotations'),
