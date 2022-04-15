@@ -3,6 +3,7 @@
 # Check Pytorch installation
 import torch, torchvision
 import constants
+import cv2
 
 print(f"torch version: {torch.__version__}"
       f"\ntorch.cuda.is_available(): {torch.cuda.is_available()}")
@@ -65,6 +66,13 @@ palette = constants.rugd_palette
 #     seg_img.putpalette(np.array(palette, dtype=np.uint8))
 #     seg_img.save(osp.join(data_root, ann_dir, file.replace('.regions.txt',
 #                                                            '.png')))
+
+# Add code to change the seg map to the required format
+for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.png'):
+    seg_map = cv2.imread(osp.join(data_root, ann_dir, file), cv2.IMREAD_GRAYSCALE)
+    seg_img = Image.fromarray(seg_map).convert('P')
+    seg_img.putpalette(np.array(palette, dtype=np.uint8))
+    seg_img.save(osp.join(data_root, ann_dir, file))
 
 # Commenting out the visualization code
 # Let's take a look at the segmentation map we got
