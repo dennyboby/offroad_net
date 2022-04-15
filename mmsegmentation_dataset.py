@@ -66,20 +66,20 @@ palette = constants.rugd_palette
 #     seg_img.save(osp.join(data_root, ann_dir, file.replace('.regions.txt',
 #                                                            '.png')))
 
-#
+# Commenting out the visualization code
 # Let's take a look at the segmentation map we got
-import matplotlib.patches as mpatches
-
-img = Image.open('iccv09Data/labels/6000124.png')
-plt.figure(figsize=(8, 6))
-im = plt.imshow(np.array(img.convert('RGB')))
-
-# create a patch (proxy artist) for every color 
-patches = [mpatches.Patch(color=np.array(palette[i]) / 255.,
-                          label=classes[i]) for i in range(8)]
-# put those patched as legend-handles into the legend
-plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,
-           fontsize='large')
+# import matplotlib.patches as mpatches
+#
+# img = Image.open('iccv09Data/labels/6000124.png')
+# plt.figure(figsize=(8, 6))
+# im = plt.imshow(np.array(img.convert('RGB')))
+#
+# # create a patch (proxy artist) for every color
+# patches = [mpatches.Patch(color=np.array(palette[i]) / 255.,
+#                           label=classes[i]) for i in range(8)]
+# # put those patched as legend-handles into the legend
+# plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,
+#            fontsize='large')
 
 # plt.show()
 
