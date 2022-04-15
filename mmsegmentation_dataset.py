@@ -177,10 +177,10 @@ cfg.img_norm_cfg = dict(
 cfg.crop_size = (256, 256)
 
 # original size of the iccv09data image
-img_scale = (320, 240)
+# img_scale = (320, 240)
 
 # Changing to original size of the rugd image
-# img_scale = (688, 550)
+img_scale = (688, 550)
 
 cfg.train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -239,10 +239,10 @@ cfg.load_from = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_0033
 # Set up working dir to save files and logs.
 cfg.work_dir = './work_dirs/tutorial'
 
-cfg.runner.max_iters = 20
-cfg.log_config.interval = 10
-cfg.evaluation.interval = 10
-cfg.checkpoint_config.interval = 20
+cfg.runner.max_iters = 200
+cfg.log_config.interval = 50
+cfg.evaluation.interval = 100
+cfg.checkpoint_config.interval = 200
 
 # Set seed to facitate reproducing the result
 cfg.seed = 0
