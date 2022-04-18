@@ -119,7 +119,7 @@ To accelerate the process, we fine tune the model from trained weights.
 
 from mmcv import Config
 
-cfg = Config.fromfile('configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py')
+cfg = Config.fromfile('configs/offroadnet/offroadnet_r50-d8_512x1024_40k_cityscapes.py')
 
 """
 Since the given config is used to train PSPNet on the cityscapes dataset, 

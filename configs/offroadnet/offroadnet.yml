@@ -13,7 +13,7 @@ Collections:
   Converted From:
     Code: https://github.com/hszhao/PSPNet
 Models:
-- Name: pspnet_r50-d8_512x1024_40k_cityscapes
+- Name: offroadnet_r50-d8_512x1024_40k_cityscapes
   In Collection: OffRoadNet
   Metadata:
     backbone: R-50-D8
@@ -33,5 +33,5 @@ Models:
     Metrics:
       mIoU: 77.85
       mIoU(ms+flip): 79.18
-  Config: configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py
+  Config: configs/offroadnet/offroadnet_r50-d8_512x1024_40k_cityscapes.py
   Weights: https://download.openmmlab.com/mmsegmentation/v0.5/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth
