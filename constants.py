@@ -1,4 +1,5 @@
-rugd_dir = "RUGD/RUGD_sample-data"
+# rugd_dir = "RUGD/RUGD_sample-data"
+rugd_dir = "RUGD/RUGD_full"
 
 rugd_classes = (
     'void', 'dirt', 'sand', 'grass', 'tree',

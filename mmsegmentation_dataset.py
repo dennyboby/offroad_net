@@ -237,10 +237,10 @@ cfg.data.test.split = 'splits/val.txt'
 cfg.load_from = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
 # Set up working dir to save files and logs.
-cfg.work_dir = './work_dirs/tutorial'
+cfg.work_dir = './work_dirs/rugd_full'
 
-cfg.runner.max_iters = 200
-cfg.log_config.interval = 50
+cfg.runner.max_iters = 1000
+cfg.log_config.interval = 100
 cfg.evaluation.interval = 100
 cfg.checkpoint_config.interval = 200
 
@@ -264,6 +264,7 @@ datasets = [build_dataset(cfg.data.train)]
 # Build the detector
 model = build_segmentor(
     cfg.model, train_cfg=cfg.get('train_cfg'), test_cfg=cfg.get('test_cfg'))
+
 # Add an attribute for visualization convenience
 model.CLASSES = datasets[0].CLASSES
 
@@ -271,6 +272,8 @@ model.CLASSES = datasets[0].CLASSES
 mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
 train_segmentor(model, datasets, cfg, distributed=False, validate=True,
                 meta=dict())
+
+
 img = mmcv.imread('iccv09Data/images/6000124.jpg')
 
 model.cfg = cfg
