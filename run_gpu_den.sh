@@ -8,7 +8,7 @@
 #SBATCH -p short
 
 
-module load cuda11.1/toolkit/11.1.1
+module load cuda10.2/toolkit/10.2.89
 module load cudnn/8.1.1.33-11.2/3k5bbs63
 
 source /home/dboby/dl_py39/bin/activate
