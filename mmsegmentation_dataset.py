@@ -46,26 +46,27 @@ import numpy as np
 from PIL import Image
 
 # convert dataset annotation to semantic segmentation map
-# data_root = 'iccv09Data'
+iccv_data_root = 'iccv09Data'
 data_root = constants.rugd_dir
 img_dir = 'images'
 ann_dir = 'labels'
 
 # define class and palette for better visualization
-# classes = ('sky', 'tree', 'road', 'grass', 'water', 'bldg', 'mntn', 'fg obj')
-# palette = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34],
-#            [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
+iccv_classes = ('sky', 'tree', 'road', 'grass', 'water', 'bldg', 'mntn', 'fg obj')
+iccv_palette = [[128, 128, 128], [129, 127, 38], [120, 69, 125], [53, 125, 34],
+                [0, 11, 123], [118, 20, 12], [122, 81, 25], [241, 134, 51]]
 classes = constants.rugd_classes
 palette = constants.rugd_palette
 
 # This code just scans the directory and creates a map based on the class color maps
 # This need not be run for RUGD as we already have what we need
-# for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.regions.txt'):
-#     seg_map = np.loadtxt(osp.join(data_root, ann_dir, file)).astype(np.uint8)
-#     seg_img = Image.fromarray(seg_map).convert('P')
-#     seg_img.putpalette(np.array(palette, dtype=np.uint8))
-#     seg_img.save(osp.join(data_root, ann_dir, file.replace('.regions.txt',
-#                                                            '.png')))
+list_file_names = mmcv.scandir(osp.join(iccv_data_root, ann_dir), suffix='.regions.txt')
+for file in list_file_names:
+    seg_map = np.loadtxt(osp.join(iccv_data_root, ann_dir, file)).astype(np.uint8)
+    seg_img = Image.fromarray(seg_map).convert('P')
+    seg_img.putpalette(np.array(iccv_palette, dtype=np.uint8))
+    seg_img.save(osp.join(iccv_data_root, ann_dir, file.replace('.regions.txt',
+                                                                '.png')))
 
 # Add code to change the seg map to the required format
 for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.png'):
@@ -272,7 +273,6 @@ model.CLASSES = datasets[0].CLASSES
 mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
 train_segmentor(model, datasets, cfg, distributed=False, validate=True,
                 meta=dict())
-
 
 img = mmcv.imread('iccv09Data/images/6000124.jpg')
 
