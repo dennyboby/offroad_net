@@ -60,18 +60,22 @@ palette = constants.rugd_palette
 
 # This code just scans the directory and creates a map based on the class color maps
 # This need not be run for RUGD as we already have what we need
-list_file_names = mmcv.scandir(osp.join(iccv_data_root, ann_dir), suffix='.regions.txt')
-for file in list_file_names:
-    seg_map = np.loadtxt(osp.join(iccv_data_root, ann_dir, file)).astype(np.uint8)
-    seg_img = Image.fromarray(seg_map).convert('P')
-    seg_img.putpalette(np.array(iccv_palette, dtype=np.uint8))
-    seg_img.save(osp.join(iccv_data_root, ann_dir, file.replace('.regions.txt',
-                                                                '.png')))
+# list_file_names = mmcv.scandir(osp.join(iccv_data_root, ann_dir), suffix='.regions.txt')
+# for file in list_file_names:
+#     seg_map = np.loadtxt(osp.join(iccv_data_root, ann_dir, file)).astype(np.uint8)
+#     seg_img = Image.fromarray(seg_map).convert('P')
+#     seg_img.putpalette(np.array(iccv_palette, dtype=np.uint8))
+#     seg_img.save(osp.join(iccv_data_root, ann_dir, file.replace('.regions.txt',
+#                                                                 '.png')))
 
 # Add code to change the seg map to the required format
 for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.png'):
-    seg_map = cv2.imread(osp.join(data_root, ann_dir, file), cv2.IMREAD_GRAYSCALE)
-    seg_img = Image.fromarray(seg_map).convert('P')
+    seg_map = cv2.imread(osp.join(data_root, ann_dir, file))
+    seg_map_new = np.zeros((seg_map.shape[0], seg_map.shape[1]), dtype=np.uint8)
+    for i in range(seg_map.shape[0]):
+        for j in range(seg_map.shape[1]):
+            seg_map_new[i, j] = palette.index(list(seg_map[i, j, ::-1]))
+    seg_img = Image.fromarray(seg_map_new).convert('P')
     seg_img.putpalette(np.array(palette, dtype=np.uint8))
     seg_img.save(osp.join(data_root, ann_dir, file))
 
