@@ -50,6 +50,7 @@ iccv_data_root = 'iccv09Data'
 data_root = constants.rugd_dir
 img_dir = 'images'
 ann_dir = 'labels'
+true_ann_dir = 'annotations'
 
 # define class and palette for better visualization
 iccv_classes = ('sky', 'tree', 'road', 'grass', 'water', 'bldg', 'mntn', 'fg obj')
@@ -69,8 +70,8 @@ palette = constants.rugd_palette
 #                                                                 '.png')))
 
 # Add code to change the seg map to the required format
-for file in mmcv.scandir(osp.join(data_root, ann_dir), suffix='.png'):
-    seg_map = cv2.imread(osp.join(data_root, ann_dir, file))
+for file in mmcv.scandir(osp.join(data_root, true_ann_dir), suffix='.png'):
+    seg_map = cv2.imread(osp.join(data_root, true_ann_dir, file))
     seg_map_new = np.zeros((seg_map.shape[0], seg_map.shape[1]), dtype=np.uint8)
     for i in range(seg_map.shape[0]):
         for j in range(seg_map.shape[1]):
