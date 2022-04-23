@@ -84,7 +84,16 @@ we need to modify it accordingly for our new dataset.
 """
 
 
-def update_data_config(cfg, img_dir, ann_dir):
+def update_data_config(cfg, data_root, img_dir, ann_dir, dataset_type='RUGDDataset'):
+    cfg.dataset_type = dataset_type
+    cfg.data_root = data_root
+
+    cfg.data.samples_per_gpu = 8
+    cfg.data.workers_per_gpu = 8
+
+    cfg.img_norm_cfg = dict(
+        mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+
     cfg.data.train.type = cfg.dataset_type
     cfg.data.train.data_root = cfg.data_root
     cfg.data.train.img_dir = img_dir
