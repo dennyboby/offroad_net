@@ -243,7 +243,7 @@ cfg.data.test.split = 'splits/val.txt'
 cfg.load_from = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
 # Set up working dir to save files and logs.
-cfg.work_dir = './work_dirs/rugd_full'
+cfg.work_dir = './work_dirs/rugd_sample'
 
 cfg.runner.max_iters = 1000
 cfg.log_config.interval = 100
