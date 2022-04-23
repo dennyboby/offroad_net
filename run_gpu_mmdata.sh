@@ -5,7 +5,7 @@
 #SBATCH -C P100
 #SBATCH --mem 80G
 #SBATCH --gres=gpu:1
-#SBATCH -p whitehill
+#SBATCH -p short
 
 
 module load cuda11.1/toolkit/11.1.1
