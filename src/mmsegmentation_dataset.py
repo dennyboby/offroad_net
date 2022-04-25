@@ -15,7 +15,7 @@ import constants
 import format_dataset as fd
 
 
-def create_cfg(img_dir, ann_dir):
+def create_cfg(data_root, img_dir, ann_dir, work_dir='./work_dirs/rugd_sample'):
     cfg = Config.fromfile('configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py')
 
     """
@@ -71,19 +71,19 @@ def create_cfg(img_dir, ann_dir):
             ])
     ]
 
-    cfg = fd.update_data_config(cfg, img_dir, ann_dir)
+    cfg = fd.update_data_config(cfg, data_root, img_dir, ann_dir)
 
     # We can still use the pre-trained Mask RCNN model though we do not need to
     # use the mask branch
     cfg.load_from = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
     # Set up working dir to save files and logs.
-    cfg.work_dir = './work_dirs/rugd_sample'
+    cfg.work_dir = work_dir
 
-    cfg.runner.max_iters = 1000
-    cfg.log_config.interval = 100
-    cfg.evaluation.interval = 100
-    cfg.checkpoint_config.interval = 200
+    cfg.runner.max_iters = 10
+    cfg.log_config.interval = 10
+    cfg.evaluation.interval = 10
+    cfg.checkpoint_config.interval = 20
 
     # Set seed to facitate reproducing the result
     cfg.seed = 0
@@ -108,6 +108,7 @@ def apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_0
     print("Applying inference")
     result = inference_segmentor(model, img)
     plt.figure(figsize=(8, 6))
+    plt.savefig(f"RUGD/results/{image_name}", dpi=300)
     palette = constants.rugd_palette
     show_result_pyplot(model, img, result, palette)
 
@@ -119,7 +120,7 @@ def setup():
     pass
 
 
-def train_model(do_format_data=True):
+def train_model(do_format_data=True, work_dir='./work_dirs/rugd_sample'):
     """
     convert dataset annotation to semantic segmentation map
     """
@@ -132,14 +133,15 @@ def train_model(do_format_data=True):
     if do_format_data:
         fd.format_data()
 
-    cfg = create_cfg(img_dir, ann_dir)
+    cfg = create_cfg(data_root, img_dir, ann_dir, work_dir)
     # Build the dataset
     datasets = [build_dataset(cfg.data.train)]
 
     # Build the detector
     print("Building model")
-    model = build_segmentor(
-        cfg.model, train_cfg=cfg.get('train_cfg'), test_cfg=cfg.get('test_cfg'))
+    model = build_segmentor(cfg.model,
+                            train_cfg=cfg.get('train_cfg'),
+                            test_cfg=cfg.get('test_cfg'))
 
     # Add an attribute for visualization convenience
     model.CLASSES = datasets[0].CLASSES
@@ -156,7 +158,8 @@ def train_model(do_format_data=True):
 
 def main():
     setup()
-    model, cfg = train_model()
+    work_dir = './work_dirs/rugd1'
+    model, cfg = train_model(work_dir=work_dir)
     apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png")
 
 
