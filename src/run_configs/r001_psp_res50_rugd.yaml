@@ -7,7 +7,7 @@ split_dir: 'splits'
 true_ann_dir: 'annotations'
 work_dir: './work_dirs/rugd1'
 config_path: 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
-pretrained_path: 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
+pretrained_path: 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 train_args:
   max_iters: 20
   log_interval: 10

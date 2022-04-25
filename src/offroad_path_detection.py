@@ -18,6 +18,7 @@ from mmcv import Config
 import matplotlib.pyplot as plt
 
 import constants
+import utils
 import format_dataset as fd
 
 
@@ -233,6 +234,7 @@ def main():
     args = parse_args()
     dict_args = load_yaml(args.yaml_path)
     classes, palette = get_classes_palette(dict_args['dataset'])
+    print(utils.print_dict(dict_args, "dict_args to the training"))
 
     model, cfg = train_model(data_root=dict_args['data_root'],
                              do_format_data=dict_args['do_format_data'],
