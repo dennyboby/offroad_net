@@ -4,6 +4,10 @@ import os
 import os.path as osp
 
 import mmseg
+from mmseg.datasets import build_dataset
+from mmseg.models import build_segmentor
+from mmseg.apis import train_segmentor
+from mmseg.apis import set_random_seed
 from mmseg.apis import inference_segmentor, init_segmentor, show_result_pyplot
 from mmseg.core.evaluation import get_palette
 
@@ -15,15 +19,20 @@ import constants
 import format_dataset as fd
 
 
-def create_cfg(data_root, img_dir, ann_dir, work_dir='./work_dirs/rugd_sample'):
-    cfg = Config.fromfile('configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py')
+def create_cfg(data_root,
+               img_dir,
+               ann_dir,
+               work_dir='./work_dirs/rugd_sample',
+               config_path='configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py',
+               pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'):
+
+    # Main config file - base file
+    cfg = Config.fromfile(config_path)
 
     """
     Since the given config is used to train PSPNet on the cityscapes dataset, 
     we need to modify it accordingly for our new dataset.  
     """
-
-    from mmseg.apis import set_random_seed
 
     # Since we use only one GPU, BN is used instead of SyncBN
     cfg.norm_cfg = dict(type='BN', requires_grad=True)
@@ -75,7 +84,7 @@ def create_cfg(data_root, img_dir, ann_dir, work_dir='./work_dirs/rugd_sample'):
 
     # We can still use the pre-trained Mask RCNN model though we do not need to
     # use the mask branch
-    cfg.load_from = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
+    cfg.load_from = pretrained_path
 
     # Set up working dir to save files and logs.
     cfg.work_dir = work_dir
@@ -95,10 +104,6 @@ def create_cfg(data_root, img_dir, ann_dir, work_dir='./work_dirs/rugd_sample'):
 
     return cfg
 
-
-from mmseg.datasets import build_dataset
-from mmseg.models import build_segmentor
-from mmseg.apis import train_segmentor
 
 
 def apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png"):
@@ -128,7 +133,9 @@ def train_model(data_root=constants.rugd_dir,
                 true_ann_dir='annotations',
                 classes=constants.rugd_classes,
                 palette=constants.rugd_palette,
-                work_dir='./work_dirs/rugd_sample'):
+                work_dir='./work_dirs/rugd_sample',
+                config_path='configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py',
+                pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'):
     """
     convert dataset annotation to semantic segmentation map
     """
@@ -142,7 +149,12 @@ def train_model(data_root=constants.rugd_dir,
                        palette=palette
                        )
 
-    cfg = create_cfg(data_root, img_dir, ann_dir, work_dir)
+    cfg = create_cfg(data_root,
+                     img_dir,
+                     ann_dir,
+                     work_dir,
+                     config_path,
+                     pretrained_path)
     # Build the dataset
     datasets = [build_dataset(cfg.data.train)]
 
@@ -168,7 +180,8 @@ def train_model(data_root=constants.rugd_dir,
 def main():
     setup()
     work_dir = './work_dirs/rugd1'
-    model, cfg = train_model(work_dir=work_dir)
+    config_path = 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
+    model, cfg = train_model(work_dir=work_dir, config_path=config_path)
 
     print("Training completed. Inferring.")
     apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png")
