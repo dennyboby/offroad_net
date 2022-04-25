@@ -14,13 +14,17 @@ print(f"mmseg version: {mmseg.__version__}")
 from mmseg.apis import inference_segmentor, init_segmentor, show_result_pyplot
 from mmseg.core.evaluation import get_palette
 
-# Resnet50 backbone
+# PSPNet with resnet50 backbone
 # config_file = 'configs/offroadnet/offroadnet_r50-d8_512x1024_40k_cityscapes.py'
 # checkpoint_file = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 
-# Resnet101 backbone
-config_file = 'configs/offroadnet/offroadnet_r101-d8_512x1024_40k_cityscapes.py'
-checkpoint_file = 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
+# PSPNet with resnet101 backbone
+# config_file = 'configs/offroadnet/offroadnet_r101-d8_512x1024_40k_cityscapes.py'
+# checkpoint_file = 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
+
+# Vision Transformer
+config_file = 'configs/offroadnet/upernet_deit-b16_ln_mln_512x512_160k_ade20k.py'
+checkpoint_file = 'checkpoints/upernet_vit-b16_ln_mln_512x512_160k_ade20k_20210621_172828-f444c077.pth'
 
 # build the model from a config file and a checkpoint file
 model = init_segmentor(config_file, checkpoint_file, device='cuda:0')
@@ -124,7 +128,9 @@ To accelerate the process, we fine tune the model from trained weights.
 
 from mmcv import Config
 
-cfg = Config.fromfile('configs/offroadnet/offroadnet_r101-d8_512x1024_40k_cityscapes.py')
+# cfg = Config.fromfile('configs/offroadnet/offroadnet_r50-d8_512x1024_40k_cityscapes.py')
+# cfg = Config.fromfile('configs/offroadnet/offroadnet_r101-d8_512x1024_40k_cityscapes.py')
+cfg = Config.fromfile('configs/offroadnet/upernet_deit-b16_ln_mln_512x512_160k_ade20k.py')
 
 """
 Since the given config is used to train PSPNet on the cityscapes dataset, 
@@ -205,7 +211,8 @@ cfg.data.test.split = 'splits/val.txt'
 # We can still use the pre-trained Mask RCNN model though we do not need to
 # use the mask branch
 # cfg.load_from = 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
-cfg.load_from = 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
+# cfg.load_from = 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
+cfg.load_from = 'checkpoints/upernet_vit-b16_ln_mln_512x512_160k_ade20k_20210621_172828-f444c077.pth'
 
 # Set up working dir to save files and logs.
 cfg.work_dir = './work_dirs/tutorial'
