@@ -109,14 +109,24 @@ def create_cfg(data_root,
     return cfg
 
 
-def apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png"):
+def apply_inference(model,
+                    cfg,
+                    dir_data=constants.rugd_dir,
+                    image_name="creek_00001.png",
+                    work_dir="work",
+                    infer_dir="inference"):
     img_path = os.path.join(dir_data, 'images', image_name)
     img = mmcv.imread(img_path)
     model.cfg = cfg
     print("Applying inference")
     result = inference_segmentor(model, img)
     plt.figure(figsize=(8, 6))
-    plt.savefig(f"RUGD/results/{image_name}", dpi=300)
+
+    save_path = os.path.join(work_dir, infer_dir)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    plt.savefig(os.path.join(save_path, image_name))
     palette = constants.rugd_palette
     show_result_pyplot(model, img, result, palette)
 
@@ -238,7 +248,11 @@ def main():
                              train_args=dict_args['train_args'])
 
     print("Training completed. Inferring.")
-    apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png")
+    apply_inference(model,
+                    cfg,
+                    dir_data=dict_args['data_root'],
+                    work_dir=dict_args['work_dir'],
+                    image_name="creek_00001.png")
 
 
 if __name__ == '__main__':
