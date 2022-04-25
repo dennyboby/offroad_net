@@ -120,18 +120,27 @@ def setup():
     pass
 
 
-def train_model(do_format_data=True, work_dir='./work_dirs/rugd_sample'):
+def train_model(data_root=constants.rugd_dir,
+                do_format_data=True,
+                img_dir='images',
+                ann_dir='labels',
+                split_dir='splits',
+                true_ann_dir='annotations',
+                classes=constants.rugd_classes,
+                palette=constants.rugd_palette,
+                work_dir='./work_dirs/rugd_sample'):
     """
     convert dataset annotation to semantic segmentation map
     """
-    iccv_data_root = 'iccv09Data'
-    data_root = constants.rugd_dir
-    img_dir = 'images'
-    ann_dir = 'labels'
-    true_ann_dir = 'annotations'
-
     if do_format_data:
-        fd.format_data()
+        fd.format_data(data_root=data_root,
+                       img_dir=img_dir,
+                       ann_dir=ann_dir,
+                       split_dir=split_dir,
+                       true_ann_dir=true_ann_dir,
+                       classes=classes,
+                       palette=palette
+                       )
 
     cfg = create_cfg(data_root, img_dir, ann_dir, work_dir)
     # Build the dataset
@@ -160,6 +169,8 @@ def main():
     setup()
     work_dir = './work_dirs/rugd1'
     model, cfg = train_model(work_dir=work_dir)
+
+    print("Training completed. Inferring.")
     apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png")
 
 

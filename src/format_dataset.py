@@ -122,15 +122,13 @@ def setup():
     pass
 
 
-def format_data(
-        iccv_data_root='iccv09Data',
-        data_root=constants.rugd_dir,
-        img_dir='images',
-        ann_dir='labels',
-        split_dir='splits',
-        true_ann_dir='annotations',
-        classes=constants.rugd_classes,
-        palette=constants.rugd_palette):
+def format_data(data_root=constants.rugd_dir,
+                img_dir='images',
+                ann_dir='labels',
+                split_dir='splits',
+                true_ann_dir='annotations',
+                classes=constants.rugd_classes,
+                palette=constants.rugd_palette):
     """
     convert dataset annotation to semantic segmentation map
     """
