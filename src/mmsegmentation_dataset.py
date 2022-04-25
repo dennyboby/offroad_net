@@ -80,10 +80,10 @@ def create_cfg(data_root, img_dir, ann_dir, work_dir='./work_dirs/rugd_sample'):
     # Set up working dir to save files and logs.
     cfg.work_dir = work_dir
 
-    cfg.runner.max_iters = 10
+    cfg.runner.max_iters = 20
     cfg.log_config.interval = 10
     cfg.evaluation.interval = 10
-    cfg.checkpoint_config.interval = 20
+    cfg.checkpoint_config.interval = 10
 
     # Set seed to facitate reproducing the result
     cfg.seed = 0
