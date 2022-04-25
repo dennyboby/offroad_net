@@ -2,6 +2,8 @@ import torch, torchvision
 import cv2
 import os
 import os.path as osp
+import yaml
+import argparse
 
 import mmseg
 from mmseg.datasets import build_dataset
@@ -25,7 +27,6 @@ def create_cfg(data_root,
                work_dir='./work_dirs/rugd_sample',
                config_path='configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py',
                pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'):
-
     # Main config file - base file
     cfg = Config.fromfile(config_path)
 
@@ -105,7 +106,6 @@ def create_cfg(data_root,
     return cfg
 
 
-
 def apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png"):
     img_path = os.path.join(dir_data, 'images', image_name)
     img = mmcv.imread(img_path)
@@ -177,11 +177,59 @@ def train_model(data_root=constants.rugd_dir,
     return model, cfg
 
 
+def load_yaml(yaml_path):
+    dict_args = {}
+    with open(yaml_path, 'r') as stream:
+        dictionary = yaml.safe_load(stream)
+        for key, val in dictionary.items():
+            dict_args[key] = val
+
+    return dict_args
+
+
+def get_classes_palette(dataset):
+    classes = None
+    palette = None
+    if dataset == 'rugd':
+        classes = constants.rugd_classes
+        palette = constants.rugd_palette
+
+    return classes, palette
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--yaml_path",
+                        type=str,
+                        default="run_configs/r001_psp_res50_rugd.yaml",
+                        help="yaml path for the run")
+
+    args = parser.parse_args()
+    return args
+
+
 def main():
-    setup()
+    """
     work_dir = './work_dirs/rugd1'
     config_path = 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
-    model, cfg = train_model(work_dir=work_dir, config_path=config_path)
+
+    """
+    setup()
+    args = parse_args()
+    dict_args = load_yaml(args['yaml_path'])
+    classes, palette = get_classes_palette(dict_args['dataset'])
+
+    model, cfg = train_model(data_root=dict_args['data_root'],
+                             do_format_data=dict_args['do_format_data'],
+                             img_dir=dict_args['img_dir'],
+                             ann_dir=dict_args['ann_dir'],
+                             split_dir=dict_args['split_dir'],
+                             true_ann_dir=dict_args['true_ann_dir'],
+                             classes=classes,
+                             palette=palette,
+                             work_dir=dict_args['work_dir'],
+                             config_path=dict_args['config_path'],
+                             pretrained_path=dict_args['pretrained_path'])
 
     print("Training completed. Inferring.")
     apply_inference(model, cfg, dir_data=constants.rugd_dir, image_name="creek_00001.png")
