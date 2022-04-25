@@ -57,10 +57,10 @@ model = dict(
     #     init_cfg (dict or list[dict], optional): Initialization config dict.
     #         Default: None.
     type='EncoderDecoder',
-    pretrained='open-mmlab://resnet50_v1c',
+    pretrained='open-mmlab://resnet101_v1c',
     backbone=dict(
         type='ResNetV1c', # Different models present in mmseg/models/backbones/
-        depth=50,
+        depth=101,
         num_stages=4,
         out_indices=(0, 1, 2, 3),
         dilations=(1, 1, 2, 4),
