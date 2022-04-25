@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-# from imutils import paths
+from imutils import paths
 
 def class_segmentor(img,R,G,B):
     # img[:,:,2]=0 #R
@@ -26,11 +26,10 @@ if __name__ == '__main__':
     
     for i in range(1,7437):
 
-        img=cv.imread("/home/denny/dl_project/RUGD_annotations_combined/img ("+str(i)+").png")
-        R,G,B=[64,64,64]
+        img=cv.imread("G:\MS Courses\Deep Learning\Group Project\my\RUGD_annotations_combined\img ("+str(i)+").png")
+        R,G,B=[101,101,11]
         img=class_segmentor(img,R,G,B)
-        print('Processing image:',i)
-        name='home/denny/dl_project/asphalt_64_64_64/img ('+str(i)+').png'
+        name='G:\MS Courses\Deep Learning\Group Project\my\RUGD_annotations_combined_OffroadNet\img ('+str(i)+').png'
         cv.imwrite(name,img)
         # cv.imshow('img',img)  
         i+=1
