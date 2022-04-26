@@ -3,7 +3,7 @@ import os
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-from imutils import paths
+# from imutils import paths
 
 import pandas as pd
 
@@ -81,6 +81,10 @@ def class_segmentor(img, R, G, B):
     return img
 
 
+def check_class(img):
+    pass
+
+
 def process_image(file, img_class, R, G, B):
     """
 
@@ -102,14 +106,15 @@ def process_image(file, img_class, R, G, B):
 
 
 def get_paths(root_dir):
-    pass
+    # list_file_paths = [os.path.abspath(x) for x in os.listdir(root_dir)]
+    list_file_paths = [os.path.join(root_dir, x) for x in os.listdir(root_dir)]
+    return list_file_paths
 
 
 if __name__ == '__main__':
-    # imagePaths=list(paths.list_images("G:\MS Courses\Deep Learning\Group Project\my\\RUGD_annotations_combined"))
-    root_dir = "../RUGD"
-    # ["../RUGD/x.png", "../RUGD/y.png"]
-    list_image_paths = get_paths(root_dir)
+    root_dir = "../RUGD/RUGD_sample-data/"
+    images_path = "annotations"
+    list_image_paths = get_paths(os.path.join(root_dir, images_path))
     modify_and_track(list_image_paths)
     # for i in range(1, 7437):
     #     process_image(i)
