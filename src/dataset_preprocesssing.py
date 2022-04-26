@@ -8,6 +8,13 @@ from imutils import paths
 import pandas as pd
 
 """
+Goal: To re-annotate the original annotation images
+for the interest_classes and 
+save it under different folders
+
+rest = [0 ,0 ,0]
+interest_class = [255, 255, 255]
+
 rugd 
 
 ---annotations

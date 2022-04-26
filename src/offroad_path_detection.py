@@ -133,6 +133,29 @@ def apply_inference(model,
     plt.savefig(os.path.join(save_path, image_name))
 
 
+def apply_inference_video(model,
+                          cfg,
+                          dir_data=constants.rugd_dir,
+                          image_name="creek_00001.png",
+                          work_dir="work",
+                          infer_dir="inference"):
+    img_path = os.path.join(dir_data, 'images', image_name)
+    img = mmcv.imread(img_path)
+    model.cfg = cfg
+    print("Applying inference")
+    result = inference_segmentor(model, img)
+    plt.figure(figsize=(8, 6))
+
+    save_path = os.path.join(work_dir, infer_dir)
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+
+    palette = constants.rugd_palette
+    show_result_pyplot(model, img, result, palette)
+
+    plt.savefig(os.path.join(save_path, image_name))
+
+
 def setup():
     print(f"\ntorch version: {torch.__version__}"
           f"\ntorch.cuda.is_available(): {torch.cuda.is_available()}"
