@@ -13,5 +13,5 @@ module load cudnn/8.1.1.33-11.2/3k5bbs63
 
 source /home/dboby/dl_py39/bin/activate
 
-echo "Starting to run mmsegmentation_architecture.py"
-python mmsegmentation_architecture.py
+echo "Starting to run src/offroad_path_detection.py"
+python src/offroad_path_detection.py --yaml_path=src/run_configs/r001_psp_res50_rugd.yaml
