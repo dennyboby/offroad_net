@@ -127,9 +127,10 @@ def apply_inference(model,
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
-    plt.savefig(os.path.join(save_path, image_name))
     palette = constants.rugd_palette
     show_result_pyplot(model, img, result, palette)
+
+    plt.savefig(os.path.join(save_path, image_name))
 
 
 def setup():
