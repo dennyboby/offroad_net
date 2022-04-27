@@ -162,7 +162,7 @@ def main():
         if not os.path.exists(work_dir):
             os.makedirs(work_dir)
     work_dir = os.path.join(root_dir, "new_annotations")
-    num_jobs = 10
+    num_jobs = 5
     list_image_paths = get_paths(os.path.join(root_dir, images_path))
     list_image_paths = list_image_paths[:2]
     modify_and_track(list_image_paths, work_dir, num_jobs)
