@@ -1,5 +1,6 @@
 #!/bin/bash
-#SBATCH -N 5
+#SBATCH -N 1
+#SBATCH -n 10
 #SBATCH --job-name=rugddp
 #SBATCH -t 20:00:00
 #SBATCH --mem 40G
