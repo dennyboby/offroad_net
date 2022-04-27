@@ -155,14 +155,14 @@ def get_paths(root_dir):
 
 
 def main():
-    root_dir = "../RUGD/RUGD_sample-data/"
+    root_dir = "../RUGD/RUGD_full/"
     images_path = "annotations"
     for class_x in LIST_CLASSES:
         work_dir = os.path.join(root_dir, "new_annotations", class_x)
         if not os.path.exists(work_dir):
             os.makedirs(work_dir)
     work_dir = os.path.join(root_dir, "new_annotations")
-    num_jobs = 2
+    num_jobs = 10
     list_image_paths = get_paths(os.path.join(root_dir, images_path))
     list_image_paths = list_image_paths[:2]
     modify_and_track(list_image_paths, work_dir, num_jobs)
