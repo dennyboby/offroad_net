@@ -1,6 +1,6 @@
-data_root: "RUGD/RUGD_sample-data"
+data_root: "RUGD/RUGD_full"
 dataset: 'rugd'
-do_format_data: true
+do_format_data: false
 img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
