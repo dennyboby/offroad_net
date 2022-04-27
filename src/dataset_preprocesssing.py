@@ -74,19 +74,23 @@ def modify_and_track(list_files, work_dir, num_jobs=1):
     list_tuples = create_combo(list_files, LIST_CLASSES)
 
     result = Parallel(n_jobs=num_jobs)(delayed(process_image)(work_dir, tup_x) for tup_x in list_tuples)
-    records, i = zip(*result)
+    records, process_ids = zip(*result)
+
+    print(f"list_process_ids {len(process_ids)}: {process_ids}")
 
     df_rec = pd.DataFrame.from_records(list(records))
+    print(df_rec.head())
     df_rec.to_csv(f"df_original_data.csv", index=False)
 
 
 def get_unique(img_numpy):
-    list_unique_colors = np.unique(
-        img_numpy.view(np.dtype((np.void, img_numpy.dtype.itemsize * img_numpy.shape[1])))
-    ).view(img_numpy.dtype).reshape(-1, img_numpy.shape[1])
+    list_unique_colors = []
+    # list_unique_colors = np.unique(
+    #     img_numpy.view(np.dtype((np.void, img_numpy.dtype.itemsize * img_numpy.shape[1])))
+    # ).view(img_numpy.dtype).reshape(-1, img_numpy.shape[1])
 
     print(list_unique_colors)
-
+    return list_unique_colors
 
 def fast_color_changer():
     im = Image.open('fig1.png')
@@ -160,6 +164,7 @@ def main():
     work_dir = os.path.join(root_dir, "new_annotations")
     num_jobs = 1
     list_image_paths = get_paths(os.path.join(root_dir, images_path))
+    list_image_paths = list_image_paths[:5]
     modify_and_track(list_image_paths, work_dir, num_jobs)
 
 
