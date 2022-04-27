@@ -233,6 +233,11 @@ def get_classes_palette(dataset):
     if dataset == 'rugd':
         classes = constants.rugd_classes
         palette = constants.rugd_palette
+    elif dataset == 'offroad':
+        classes = constants.offroad_classes
+        palette = constants.offroad_palette
+    else:
+        print(f"Wrong dataset!")
 
     return classes, palette
 

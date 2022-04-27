@@ -1,6 +1,16 @@
 rugd_dir = "RUGD/RUGD_sample-data"
 # rugd_dir = "RUGD"
 
+offroad_classes = (
+    'background',
+    'path'
+)
+
+offroad_palette = [
+    [0, 0, 0],
+    [255, 255, 255]
+]
+
 rugd_classes = (
     'void', 'dirt', 'sand', 'grass', 'tree',
     'pole', 'water', 'sky', 'vehicle', 'container/generic-object',
