@@ -32,7 +32,8 @@ LIST_CLASSES = ["gravel", "concrete", "asphalt"]
 DICT_COLOR = {
     "gravel": (255, 128, 0),
     "concrete": (101, 101, 11),
-    "asphalt": (64, 64, 64)
+    "asphalt": (64, 64, 64),
+    "rock_bed": (102, 102, 0)
 }
 
 
@@ -58,6 +59,7 @@ def change_segmentation(file_name, red, green, blue, dest_path):
 
 def process_image(work_dir, data):
     file_name, img_class = data
+    print(f"processing: {file_name}")
     dest_path = os.path.join(work_dir, img_class, os.path.basename(file_name))
     red, green, blue = DICT_COLOR[img_class]
     is_class_present = change_segmentation(file_name, red, green, blue, dest_path)
@@ -73,11 +75,13 @@ def process_image(work_dir, data):
 def modify_and_track(list_files, work_dir, num_jobs=1):
     list_tuples = create_combo(list_files, LIST_CLASSES)
 
+    print(f"starting jobs")
     result = Parallel(n_jobs=num_jobs)(delayed(process_image)(work_dir, tup_x) for tup_x in list_tuples)
     # records, process_ids = zip(*result)
     records = result
     # print(f"list_process_ids {len(process_ids)}: {process_ids}")
 
+    print(f"saving")
     df_rec = pd.DataFrame.from_records(list(records))
     print(df_rec.head())
     df_rec.to_csv(f"df_original_data.csv", index=False)
@@ -164,8 +168,9 @@ def main():
     work_dir = os.path.join(root_dir, "new_annotations")
     num_jobs = 10
     list_image_paths = get_paths(os.path.join(root_dir, images_path))
-    list_image_paths = list_image_paths[:2]
+    # list_image_paths = list_image_paths[:2]
     modify_and_track(list_image_paths, work_dir, num_jobs)
+    print(f"done.")
 
 
 if __name__ == '__main__':
