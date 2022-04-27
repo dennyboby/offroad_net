@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 # from imutils import paths
 import itertools
 from PIL import Image
+from joblib import Parallel, delayed
 
 import pandas as pd
 
@@ -25,6 +26,8 @@ rugd
 ------gravel
 ------concrete
 """
+
+LIST_CLASSES = ["gravel", "concrete", "asphalt"]
 
 DICT_COLOR = {
     "gravel": (255, 128, 0),
@@ -67,12 +70,10 @@ def process_image(work_dir, data):
     return dict_rec
 
 
-def modify_and_track(list_files, num_jobs=1):
-    list_interest_class = ["gravel", "concrete", "asphalt"]
+def modify_and_track(list_files, work_dir, num_jobs=1):
+    list_tuples = create_combo(list_files, LIST_CLASSES)
 
-    list_tuples = create_combo(list_files, list_interest_class)
-    from joblib import Parallel, delayed
-    result = Parallel(n_jobs=num_jobs)(delayed(process_image)(tup_x) for tup_x in list_tuples)
+    result = Parallel(n_jobs=num_jobs)(delayed(process_image)(work_dir, tup_x) for tup_x in list_tuples)
     records, i = zip(*result)
 
     df_rec = pd.DataFrame.from_records(list(records))
@@ -152,9 +153,14 @@ def get_paths(root_dir):
 def main():
     root_dir = "../RUGD/RUGD_sample-data/"
     images_path = "annotations"
+    for class_x in LIST_CLASSES:
+        work_dir = os.path.join(root_dir, "new_annotations", class_x)
+        if not os.path.exists(work_dir):
+            os.makedirs(work_dir)
+    work_dir = os.path.join(root_dir, "new_annotations")
     num_jobs = 1
     list_image_paths = get_paths(os.path.join(root_dir, images_path))
-    modify_and_track(list_image_paths, num_jobs)
+    modify_and_track(list_image_paths, work_dir, num_jobs)
 
 
 if __name__ == '__main__':
