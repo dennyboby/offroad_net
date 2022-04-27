@@ -58,7 +58,7 @@ def change_segmentation(file_name, red, green, blue, dest_path):
 
 def process_image(work_dir, data):
     file_name, img_class = data
-    dest_path = os.path.join(work_dir, img_class, file_name)
+    dest_path = os.path.join(work_dir, img_class, os.path.basename(file_name))
     red, green, blue = DICT_COLOR[img_class]
     is_class_present = change_segmentation(file_name, red, green, blue, dest_path)
     dict_rec = {
@@ -74,9 +74,9 @@ def modify_and_track(list_files, work_dir, num_jobs=1):
     list_tuples = create_combo(list_files, LIST_CLASSES)
 
     result = Parallel(n_jobs=num_jobs)(delayed(process_image)(work_dir, tup_x) for tup_x in list_tuples)
-    records, process_ids = zip(*result)
-
-    print(f"list_process_ids {len(process_ids)}: {process_ids}")
+    # records, process_ids = zip(*result)
+    records = result
+    # print(f"list_process_ids {len(process_ids)}: {process_ids}")
 
     df_rec = pd.DataFrame.from_records(list(records))
     print(df_rec.head())
@@ -162,9 +162,9 @@ def main():
         if not os.path.exists(work_dir):
             os.makedirs(work_dir)
     work_dir = os.path.join(root_dir, "new_annotations")
-    num_jobs = 1
+    num_jobs = 2
     list_image_paths = get_paths(os.path.join(root_dir, images_path))
-    list_image_paths = list_image_paths[:5]
+    list_image_paths = list_image_paths[:2]
     modify_and_track(list_image_paths, work_dir, num_jobs)
 
 
