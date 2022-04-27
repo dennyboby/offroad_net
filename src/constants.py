@@ -1,4 +1,4 @@
-rugd_dir = "RUGD/RUGD_sample-data"
+rugd_dir = "../RUGD/RUGD_sample-data"
 # rugd_dir = "RUGD"
 
 offroad_classes = (

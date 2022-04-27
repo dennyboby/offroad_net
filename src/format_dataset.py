@@ -23,6 +23,10 @@ import constants
 
 def transform_seg_map_mode_p(data_root, ann_dir, true_ann_dir, palette):
     # Add code to change the seg map to the required format
+    # color_to_palette_index = {}
+    # for index, color in enumerate(palette):
+    #     color_to_palette_index[tuple(color)] = index
+
     for file in mmcv.scandir(osp.join(data_root, true_ann_dir), suffix='.png'):
         seg_map = cv2.imread(osp.join(data_root, true_ann_dir, file))
         seg_map_new = np.zeros((seg_map.shape[0], seg_map.shape[1]), dtype=np.uint8)
