@@ -155,7 +155,7 @@ def get_paths(root_dir):
 
 
 def main():
-    root_dir = "../RUGD/RUGD_full/"
+    root_dir = "RUGD/RUGD_full/"
     images_path = "annotations"
     for class_x in LIST_CLASSES:
         work_dir = os.path.join(root_dir, "new_annotations", class_x)
