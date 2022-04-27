@@ -5,7 +5,7 @@ img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
 true_ann_dir: 'annotations'
-work_dir: './work_dirs/rugd1/upernet_vit-b16_ln_mln'
+work_dir: './work_dirs/rugd_full/upernet_vit-b16_ln_mln'
 config_path: 'configs/offroadnet/upernet_vit-b16_ln_mln_512x512_160k_ade20k.py'
 pretrained_path: 'checkpoints/upernet_vit-b16_ln_mln_512x512_160k_ade20k_20210621_172828-f444c077.pth'
 train_args:

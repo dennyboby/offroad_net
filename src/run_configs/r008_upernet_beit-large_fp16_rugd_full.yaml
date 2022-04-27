@@ -5,7 +5,7 @@ img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
 true_ann_dir: 'annotations'
-work_dir: './work_dirs/rugd1/upernet_beit-large_fp16'
+work_dir: './work_dirs/rugd_full/upernet_beit-large_fp16'
 config_path: 'configs/offroadnet/upernet_beit-large_fp16_8x1_640x640_160k_ade20k.py'
 pretrained_path: 'checkpoints/upernet_beit-large_fp16_8x1_640x640_160k_ade20k-8fc0dd5d.pth'
 train_args:

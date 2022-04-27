@@ -5,9 +5,9 @@ img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
 true_ann_dir: 'annotations'
-work_dir: './work_dirs/rugd1/encnet_r101-d8'
-config_path: 'configs/offroadnet/encnet_r101-d8_512x1024_80k_cityscapes.py'
-pretrained_path: 'checkpoints/encnet_r101-d8_512x1024_80k_cityscapes_20200622_003555-1de64bec.pth'
+work_dir: './work_dirs/rugd_full/offroadnet_r101-d8'
+config_path: 'configs/offroadnet/offroadnet_r101-d8_512x1024_40k_cityscapes.py'
+pretrained_path: 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
 train_args:
   max_iters: 6
   log_interval: 2
