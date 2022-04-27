@@ -1,9 +1,9 @@
 #!/bin/bash
-#SBATCH -N 10
+#SBATCH -N 5
 #SBATCH --job-name=rugddp
 #SBATCH -t 20:00:00
-#SBATCH --mem 80G
-#SBATCH -p short
+#SBATCH --mem 40G
+#SBATCH -p long
 
 source /home/sskodate/py39_dl/bin/activate
 
