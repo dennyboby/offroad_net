@@ -27,7 +27,7 @@ rugd
 ------concrete
 """
 
-LIST_CLASSES = ["gravel", "concrete", "asphalt"]
+LIST_CLASSES = ["gravel", "concrete", "asphalt", "rock_bed"]
 
 DICT_COLOR = {
     "gravel": (255, 128, 0),
