@@ -37,6 +37,16 @@ rugd_palette = [
     [114, 85, 47]
 ]
 
+offroad_classes = (
+    'background',
+    'path'
+)
+
+offroad_palette = [
+    [0, 0, 0],
+    [255, 255, 255]
+]
+
 # import pandas as pd
 #
 # df = pd.read_csv(f"RUGD/RUGD_sample-data/RUGD_annotation-colormap.txt", sep=" ")
