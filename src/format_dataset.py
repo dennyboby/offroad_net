@@ -4,6 +4,7 @@ from PIL import Image
 import mmcv
 import cv2
 import matplotlib.pyplot as plt
+from joblib import Parallel, delayed
 
 from mmseg.datasets.builder import DATASETS
 from mmseg.datasets.custom import CustomDataset
@@ -20,22 +21,28 @@ import constants
 #     seg_img.putpalette(np.array(iccv_palette, dtype=np.uint8))
 #     seg_img.save(osp.join(iccv_data_root, ann_dir, file.replace('.regions.txt',
 #                                                                 '.png')))
+def _seg_mode_p(data_root, ann_dir, true_ann_dir, file, palette):
+    print(f"processing_file: {file}")
+    seg_map = cv2.imread(osp.join(data_root, true_ann_dir, file))
+    seg_map_new = np.zeros((seg_map.shape[0], seg_map.shape[1]), dtype=np.uint8)
+    for i in range(seg_map.shape[0]):
+        for j in range(seg_map.shape[1]):
+            seg_map_new[i, j] = palette.index(list(seg_map[i, j, ::-1]))
+    seg_img = Image.fromarray(seg_map_new).convert('P')
+    seg_img.putpalette(np.array(palette, dtype=np.uint8))
+    seg_img.save(osp.join(data_root, ann_dir, file))
+    return f"processed {osp.join(data_root, ann_dir, file)}"
 
-def transform_seg_map_mode_p(data_root, ann_dir, true_ann_dir, palette):
+
+def transform_seg_map_mode_p(data_root, ann_dir, true_ann_dir, palette, num_jobs=1):
     # Add code to change the seg map to the required format
     # color_to_palette_index = {}
     # for index, color in enumerate(palette):
     #     color_to_palette_index[tuple(color)] = index
 
-    for file in mmcv.scandir(osp.join(data_root, true_ann_dir), suffix='.png'):
-        seg_map = cv2.imread(osp.join(data_root, true_ann_dir, file))
-        seg_map_new = np.zeros((seg_map.shape[0], seg_map.shape[1]), dtype=np.uint8)
-        for i in range(seg_map.shape[0]):
-            for j in range(seg_map.shape[1]):
-                seg_map_new[i, j] = palette.index(list(seg_map[i, j, ::-1]))
-        seg_img = Image.fromarray(seg_map_new).convert('P')
-        seg_img.putpalette(np.array(palette, dtype=np.uint8))
-        seg_img.save(osp.join(data_root, ann_dir, file))
+    result = Parallel(n_jobs=num_jobs)(delayed(_seg_mode_p)(data_root, ann_dir, true_ann_dir, file, palette) for file in
+                                       mmcv.scandir(osp.join(data_root, true_ann_dir), suffix='.png'))
+    print(f"result: {result}")
 
 
 def split_dataset(split_dir, data_root, ann_dir):

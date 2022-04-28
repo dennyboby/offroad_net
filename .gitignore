@@ -123,3 +123,4 @@ configs/offroadnet/.DS_Store
 slurm*
 *.out
 /src/df_original_data.csv
+/yamaha_v0/
