@@ -9,7 +9,7 @@ work_dir: './work_dirs/rugd_full/upernet_beit-large_fp16'
 config_path: 'configs/offroadnet/upernet_beit-large_fp16_8x1_640x640_160k_ade20k.py'
 pretrained_path: 'checkpoints/upernet_beit-large_fp16_8x1_640x640_160k_ade20k-8fc0dd5d.pth'
 train_args:
-  max_iters: 1001
+  max_iters: 1200
   log_interval: 100
   eval_interval: 200
   checkpoint_interval: 200
