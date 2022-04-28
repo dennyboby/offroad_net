@@ -122,3 +122,5 @@ mmseg/.mim
 configs/offroadnet/.DS_Store
 slurm*
 *.out
+/Rellis_3D/
+/yamaha_v0/
