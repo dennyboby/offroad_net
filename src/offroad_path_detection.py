@@ -28,7 +28,8 @@ def create_cfg(data_root,
                work_dir='./work_dirs/rugd_sample',
                config_path='configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py',
                pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth',
-               train_args=None):
+               train_args=None,
+               len_classes=None):
     if train_args is None:
         train_args = {}
     # Main config file - base file
@@ -45,8 +46,8 @@ def create_cfg(data_root,
     cfg.model.decode_head.norm_cfg = cfg.norm_cfg
     cfg.model.auxiliary_head.norm_cfg = cfg.norm_cfg
     # modify num classes of the model in decode/auxiliary head
-    cfg.model.decode_head.num_classes = 8
-    cfg.model.auxiliary_head.num_classes = 8
+    cfg.model.decode_head.num_classes = len_classes
+    cfg.model.auxiliary_head.num_classes = len_classes
 
     cfg.crop_size = (256, 256)
 
@@ -194,7 +195,8 @@ def train_model(data_root=constants.rugd_dir,
                      work_dir,
                      config_path,
                      pretrained_path,
-                     train_args)
+                     train_args,
+                     len(classes))
     # Build the dataset
     datasets = [build_dataset(cfg.data.train)]
 
