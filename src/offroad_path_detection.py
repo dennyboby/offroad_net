@@ -29,6 +29,7 @@ def create_cfg(data_root,
                config_path='configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py',
                pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth',
                train_args=None,
+               dataset_type='RUGDDataset',
                len_classes=None):
     if train_args is None:
         train_args = {}
@@ -86,7 +87,11 @@ def create_cfg(data_root,
             ])
     ]
 
-    cfg = fd.update_data_config(cfg, data_root, img_dir, ann_dir)
+    cfg = fd.update_data_config(cfg,
+                                data_root,
+                                img_dir,
+                                ann_dir,
+                                dataset_type=dataset_type)
 
     # We can still use the pre-trained Mask RCNN model though we do not need to
     # use the mask branch
@@ -172,6 +177,7 @@ def train_model(data_root=constants.rugd_dir,
                 true_ann_dir='annotations',
                 classes=constants.rugd_classes,
                 palette=constants.rugd_palette,
+                dataset_type='RUGDDataset',
                 work_dir='./work_dirs/rugd_sample',
                 config_path='configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py',
                 pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth',
@@ -196,6 +202,7 @@ def train_model(data_root=constants.rugd_dir,
                      config_path,
                      pretrained_path,
                      train_args,
+                     dataset_type,
                      len(classes))
     # Build the dataset
     datasets = [build_dataset(cfg.data.train)]
@@ -264,7 +271,10 @@ def main():
     setup()
     args = parse_args()
     dict_args = load_yaml(args.yaml_path)
+
     classes, palette = get_classes_palette(dict_args['dataset'])
+    dataset_type = fd.get_dataset_type(dict_args['dataset'])
+
     print(utils.print_dict(dict_args, "dict_args to the training"))
 
     model, cfg = train_model(data_root=dict_args['data_root'],
@@ -275,6 +285,7 @@ def main():
                              true_ann_dir=dict_args['true_ann_dir'],
                              classes=classes,
                              palette=palette,
+                             dataset_type=dataset_type,
                              work_dir=dict_args['work_dir'],
                              config_path=dict_args['config_path'],
                              pretrained_path=dict_args['pretrained_path'],
@@ -285,7 +296,7 @@ def main():
                     cfg,
                     dir_data=dict_args['data_root'],
                     work_dir=dict_args['work_dir'],
-                    image_name="creek_00001.png")
+                    image_name="creek_00756.png")
 
 
 if __name__ == '__main__':

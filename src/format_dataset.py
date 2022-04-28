@@ -43,10 +43,12 @@ def split_dataset(split_dir, data_root, ann_dir):
     filename_list = [osp.splitext(filename)[0] for filename in mmcv.scandir(
         osp.join(data_root, ann_dir), suffix='.png')]
     np.random.shuffle(filename_list)
+
     with open(osp.join(data_root, split_dir, 'train.txt'), 'w') as f:
         # select first 80% data as train set
         train_length = int(len(filename_list) * train_percent)
         f.writelines(line + '\n' for line in filename_list[:train_length])
+
     with open(osp.join(data_root, split_dir, 'val.txt'), 'w') as f:
         # select last 1/5 as train set
         f.writelines(line + '\n' for line in filename_list[train_length:])
@@ -79,21 +81,53 @@ class RUGDDataset(CustomDataset):
         assert osp.exists(self.img_dir) and self.split is not None
 
 
+@DATASETS.register_module()
+class OffRoadDataset(CustomDataset):
+    CLASSES = constants.offroad_classes
+    PALETTE = constants.offroad_palette
+
+    def __init__(self, split, **kwargs):
+        super().__init__(img_suffix='.png', seg_map_suffix='.png',
+                         split=split, **kwargs)
+        assert osp.exists(self.img_dir) and self.split is not None
+
+
+def get_dataset_type(dataset):
+    dict_dataset_type = {
+        'rugd': 'RUGDDataset',
+        'offroad': 'OffRoadDataset'
+    }
+    return dict_dataset_type[dataset]
+
+
 """
 Since the given config is used to train PSPNet on the cityscapes dataset, 
 we need to modify it accordingly for our new dataset.  
 """
 
 
-def update_data_config(cfg, data_root, img_dir, ann_dir, dataset_type='RUGDDataset'):
+def update_data_config(cfg,
+                       data_root,
+                       img_dir,
+                       ann_dir,
+                       dataset_type='RUGDDataset',
+                       **kwargs):
+    """
+
+    """
     cfg.dataset_type = dataset_type
     cfg.data_root = data_root
 
-    cfg.data.samples_per_gpu = 8
-    cfg.data.workers_per_gpu = 8
+    cfg.data.samples_per_gpu = kwargs.get("samples_per_gpu", 8)
+    cfg.data.workers_per_gpu = kwargs.get("workers_per_gpu", 8)
 
     cfg.img_norm_cfg = dict(
         mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+
+    # TODO: Study this, and change based on our dataset
+    #  mean and std. dev of the data
+    # cfg.img_norm_cfg = dict(
+    #     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 
     cfg.data.train.type = cfg.dataset_type
     cfg.data.train.data_root = cfg.data_root
