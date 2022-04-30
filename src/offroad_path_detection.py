@@ -118,25 +118,51 @@ def create_cfg(data_root,
 
 def apply_inference(model,
                     cfg,
+                    img_size=(688, 550),
                     dir_data=constants.rugd_dir,
+                    img_dir='inference_images',
                     image_name="creek_00001.png",
-                    work_dir="work",
-                    infer_dir="inference"):
-    img_path = os.path.join(dir_data, 'images', image_name)
+                    save_path=".",
+                    palette=constants.rugd_palette
+                    ):
+    img_path = os.path.join(dir_data, img_dir, image_name)
     img = mmcv.imread(img_path)
     model.cfg = cfg
     print("Applying inference")
     result = inference_segmentor(model, img)
-    plt.figure(figsize=(8, 6))
+
+    # plt.figure(figsize=(8, 6))
+
+    show_result_pyplot(model, img, result, palette)
+
+    plt.savefig(os.path.join(save_path, image_name))
+
+
+def apply_inference_multi_images(model,
+                                 cfg,
+                                 dir_data=constants.rugd_dir,
+                                 img_dir='inference_images',
+                                 work_dir="work",
+                                 infer_dir="inference_output",
+                                 palette=constants.rugd_palette,
+                                 img_size=(688, 550)
+                                 ):
 
     save_path = os.path.join(work_dir, infer_dir)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-
-    palette = constants.rugd_palette
-    show_result_pyplot(model, img, result, palette)
-
-    plt.savefig(os.path.join(save_path, image_name))
+    list_images = []
+    for img_index, image in list_images:
+        print(f"Running inference on: {img_index} {image}")
+        apply_inference(model,
+                        cfg,
+                        img_size=img_size,
+                        dir_data=dir_data,
+                        img_dir=img_dir,
+                        image_name=image,
+                        save_path=save_path,
+                        palette=palette
+                        )
 
 
 def apply_inference_video(model,
@@ -292,11 +318,12 @@ def main():
                              train_args=dict_args['train_args'])
 
     print("Training completed. Inferring.")
-    apply_inference(model,
-                    cfg,
-                    dir_data=dict_args['data_root'],
-                    work_dir=dict_args['work_dir'],
-                    image_name="creek_00756.png")
+    apply_inference_multi_images(model,
+                                 cfg,
+                                 dir_data=dict_args['data_root'],
+                                 img_dir=dict_args['img_dir'],
+                                 work_dir=dict_args['work_dir'],
+                                 palette=palette)
 
 
 if __name__ == '__main__':
