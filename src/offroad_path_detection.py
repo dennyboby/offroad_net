@@ -154,6 +154,10 @@ def apply_inference_multi_images(model,
         os.makedirs(save_path)
 
     for sub_dir in list_sub_dirs:
+        if not os.path.exists(osp.join(save_path, sub_dir)):
+            os.makedirs(osp.join(save_path, sub_dir))
+
+    for sub_dir in list_sub_dirs:
         list_images = [filename for filename in
                        mmcv.scandir(osp.join(dir_data, img_dir, sub_dir), suffix='.png')]
         for img_index, image in list_images:
