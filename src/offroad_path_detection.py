@@ -148,21 +148,25 @@ def apply_inference_multi_images(model,
                                  img_size=(688, 550)
                                  ):
 
+    list_sub_dirs = ["test1", "test2", "test3"]
     save_path = os.path.join(work_dir, infer_dir)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
-    list_images = []
-    for img_index, image in list_images:
-        print(f"Running inference on: {img_index} {image}")
-        apply_inference(model,
-                        cfg,
-                        img_size=img_size,
-                        dir_data=dir_data,
-                        img_dir=img_dir,
-                        image_name=image,
-                        save_path=save_path,
-                        palette=palette
-                        )
+
+    for sub_dir in list_sub_dirs:
+        list_images = [filename for filename in
+                       mmcv.scandir(osp.join(dir_data, img_dir, sub_dir), suffix='.png')]
+        for img_index, image in list_images:
+            print(f"Running inference on: {img_index} {image}")
+            apply_inference(model,
+                            cfg,
+                            img_size=img_size,
+                            dir_data=dir_data,
+                            img_dir=img_dir,
+                            image_name=osp.join(sub_dir, image),
+                            save_path=save_path,
+                            palette=palette
+                            )
 
 
 def apply_inference_video(model,
