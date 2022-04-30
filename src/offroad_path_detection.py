@@ -159,7 +159,7 @@ def apply_inference_multi_images(model,
 
     for sub_dir in list_sub_dirs:
         list_images = [filename for filename in
-                       mmcv.scandir(osp.join(dir_data, img_dir, sub_dir), suffix='.png')]
+                       mmcv.scandir(osp.join(dir_data, img_dir, sub_dir), suffix='.jpg')]
         for img_index, image in list_images:
             print(f"Running inference on: {img_index} {image}")
             apply_inference(model,
