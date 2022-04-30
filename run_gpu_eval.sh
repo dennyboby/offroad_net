@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH -N 1
-#SBATCH --job-name=mmseg
-#SBATCH -t 30:00:00
+#SBATCH --job-name=eval
+#SBATCH -t 20:00:00
 #SBATCH -C P100
 #SBATCH --mem 80G
 #SBATCH --gres=gpu:1
-#SBATCH -p whitehill
+#SBATCH -p short
 
 
 module load cuda11.1/toolkit/11.1.1
