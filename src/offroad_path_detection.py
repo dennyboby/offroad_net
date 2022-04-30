@@ -325,7 +325,6 @@ def main():
     apply_inference_multi_images(model,
                                  cfg,
                                  dir_data=dict_args['data_root'],
-                                 img_dir=dict_args['img_dir'],
                                  work_dir=dict_args['work_dir'],
                                  palette=palette)
 
