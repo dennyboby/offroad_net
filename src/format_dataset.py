@@ -10,7 +10,7 @@ from mmseg.datasets.custom import CustomDataset
 
 import constants
 
-
+#test
 # This code just scans the directory and creates a map based on the class color maps
 # This need not be run for RUGD as we already have what we need
 # list_file_names = mmcv.scandir(osp.join(iccv_data_root, ann_dir), suffix='.regions.txt')
