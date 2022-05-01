@@ -40,12 +40,13 @@ def create_out_dir(list_files,
                    data_root="yamaha_v0",
                    img_dir="images",
                    ann_dir="annotations",
+                   inf_dir="inference_images/val",
                    split_dir="splits",
                    list_suffix=None):
     print(f"Creating yamaha_v1 dataset:")
 
     print(f"Making dirs: ")
-    list_dirs = ["images", "annotations", "splits"]
+    list_dirs = ["images", "annotations", "splits", "inference_images/val"]
     for dir in list_dirs:
         mmcv.mkdir_or_exist(osp.join(dir_out, dir))
 
@@ -56,17 +57,6 @@ def create_out_dir(list_files,
     for f_index, filename in enumerate(list_files):
         list_split = filename.split('/')
 
-        data_src_sub_dir = list_split[-3]
-        list_fn_split = list_split[-1].split('.')
-        file_id = list_fn_split[0]
-        file_ext = list_fn_split[1]
-        if data_src_sub_dir == "train":
-            list_train.append(file_id)
-        elif data_src_sub_dir == "valid":
-            list_val.append(file_id)
-        else:
-            print(f"Wrong sub_dir: {f_index}: {filename}")
-
         new_file_name = os.path.join('/'.join(list_split[:-2]), f"{list_split[-2]}_{list_split[-1]}")
         # print(f"{f_index}: {new_file_name}")
         list_new_files.append(new_file_name)
@@ -74,22 +64,38 @@ def create_out_dir(list_files,
     print(f"Copy files: all RGB images to images folder; labels images to annotations folder")
     for f_index, filepath in enumerate(list_files):
         list_split = filepath.split('/')
+        data_src_sub_dir = list_split[-3]
+        basefile_ext = list_split[-1].split('.')
+        base_filename = basefile_ext[0]
+        base_ext = basefile_ext[1]
         # img_type is either rgb image or labels image
-        img_type = list_split[-2]
+        img_type = list_split[-1]
 
-        new_filepath = os.path.join('/'.join(list_split[:-2]), f"{list_split[-2]}_{list_split[-1]}")
         if img_type == "rgb.jpg":
             src_path = filepath
-            dest_path = new_filepath
+
+            dest_path = os.path.join(dir_out, img_dir, f"{list_split[-2]}_{basefile_ext}")
             shutil.copy2(src_path, dest_path)
+
+            if data_src_sub_dir == "train":
+                list_val.append(base_filename)
+                dest_path = os.path.join(dir_out, ann_dir, f"{list_split[-2]}_{list_split[-1]}")
+                shutil.copy2(src_path, dest_path)
+
+            elif data_src_sub_dir == "valid":
+                list_val.append(base_filename)
+                dest_path = os.path.join(dir_out, ann_dir, f"{list_split[-2]}_{list_split[-1]}")
+                shutil.copy2(src_path, dest_path)
+            else:
+                print(f"Wrong sub_dir: {f_index}: {filepath}")
 
         elif img_type == "labels.png":
             src_path = filepath
-            dest_path = new_filepath
+            dest_path = os.path.join(dir_out, ann_dir, f"{list_split[-2]}_{list_split[-1]}")
             shutil.copy2(src_path, dest_path)
 
         else:
-            print(f"Wrong img_type: {f_index}: {filename}")
+            print(f"Wrong img_type: {f_index}: {filepath}")
 
     print(f"train.txt and val.txt in splits folder")
     with open(osp.join(split_dir, "train.txt"), "w") as fh_train:
