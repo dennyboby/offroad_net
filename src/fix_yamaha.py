@@ -47,8 +47,10 @@ def create_out_dir(list_files,
 
     print(f"Making dirs: ")
     list_dirs = ["images", "annotations", "splits", "inference_images/val"]
-    for dir in list_dirs:
-        mmcv.mkdir_or_exist(osp.join(dir_out, dir))
+    for dir_x in list_dirs:
+        temp_dir = osp.join(dir_out, dir_x)
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
 
     print(f"Replacing slashes:")
     list_new_files = []
@@ -71,38 +73,41 @@ def create_out_dir(list_files,
         # img_type is either rgb image or labels image
         img_type = list_split[-1]
 
+        new_file_name = f"{list_split[-2]}_{base_filename}"
         if img_type == "rgb.jpg":
             src_path = filepath
 
-            dest_path = os.path.join(dir_out, img_dir, f"{list_split[-2]}_{basefile_ext}")
+            dest_path = os.path.join(dir_out, img_dir, f"{new_file_name}.{base_ext}")
             shutil.copy2(src_path, dest_path)
 
             if data_src_sub_dir == "train":
-                list_val.append(base_filename)
-                dest_path = os.path.join(dir_out, ann_dir, f"{list_split[-2]}_{list_split[-1]}")
-                shutil.copy2(src_path, dest_path)
+                list_train.append(new_file_name)
 
             elif data_src_sub_dir == "valid":
-                list_val.append(base_filename)
-                dest_path = os.path.join(dir_out, ann_dir, f"{list_split[-2]}_{list_split[-1]}")
+                list_val.append(new_file_name)
+
+                dest_path = os.path.join(dir_out, inf_dir, f"{new_file_name}.{base_ext}")
                 shutil.copy2(src_path, dest_path)
             else:
                 print(f"Wrong sub_dir: {f_index}: {filepath}")
 
         elif img_type == "labels.png":
             src_path = filepath
-            dest_path = os.path.join(dir_out, ann_dir, f"{list_split[-2]}_{list_split[-1]}")
+
+            dest_path = os.path.join(dir_out, ann_dir, f"{new_file_name}.{base_ext}")
             shutil.copy2(src_path, dest_path)
 
         else:
             print(f"Wrong img_type: {f_index}: {filepath}")
 
     print(f"train.txt and val.txt in splits folder")
-    with open(osp.join(split_dir, "train.txt"), "w") as fh_train:
-        fh_train.writelines(list_train)
+    with open(osp.join(dir_out, split_dir, "train.txt"), "w") as fh_train:
+        str_lines = '\n'.join(list_train)
+        fh_train.write(str_lines)
 
-    with open(osp.join(split_dir, "val.txt"), "w") as fh_val:
-        fh_val.writelines(list_val)
+    with open(osp.join(dir_out, split_dir, "val.txt"), "w") as fh_val:
+        str_lines = '\n'.join(list_val)
+        fh_val.write(str_lines)
 
 
 def main():
