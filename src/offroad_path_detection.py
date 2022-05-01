@@ -288,6 +288,9 @@ def get_classes_palette(dataset):
     elif dataset == 'offroad':
         classes = constants.offroad_classes
         palette = constants.offroad_palette
+    elif dataset == 'yamaha':
+        classes = constants.yamaha_classes
+        palette = constants.yamaha_palette
     else:
         print(f"Wrong dataset!")
 
