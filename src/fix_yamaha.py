@@ -45,18 +45,42 @@ def create_out_dir(list_files, dir_out="yamaha_v1", data_root="yamaha_v0", ann_d
 
     print(f"Replacing slashes:")
     list_new_files = []
+    list_train = []
+    list_val = []
     for f_index, filename in enumerate(list_files):
         list_split = filename.split('/')
-        new_file_name = os.path.join(list_split[:-2], f"{list_split[-2]}_{list_split[-1]}")
-        print(f"{f_index}: {new_file_name}")
+
+        data_src_sub_dir = list_split[-3]
+        list_fn_split = list_split[-1].split('.')
+        file_id = list_fn_split[0]
+        file_ext = list_fn_split[1]
+        if data_src_sub_dir == "train":
+            list_train.append(file_id)
+        elif data_src_sub_dir == "valid":
+            list_val.append(file_id)
+        else:
+            print(f"Wrong sub_dir: {f_index}: {filename}")
+
+        new_file_name = os.path.join('/'.join(list_split[:-2]), f"{list_split[-2]}_{list_split[-1]}")
+        # print(f"{f_index}: {new_file_name}")
         list_new_files.append(new_file_name)
+
+    print(f"Move to all RGB images to images folder and labels images to annotations folder")
+    for f_index, filename in enumerate(list_new_files):
+        sub_dir = filename.split()
+
+    print(f"train.txt and val.txt in splits folder")
+    with open(osp.join(split_dir, "train.txt"), "w") as fh_train:
+        fh_train.writelines(list_train)
+
+    with open(osp.join(split_dir, "val.txt"), "w") as fh_val:
+        fh_val.writelines(list_val)
 
 
 def main():
     data_root = "temp_yamaha"
     list_files = get_yamaha_files(data_root)
     create_out_dir(list_files)
-    print(list_files[:5])
 
 
 if __name__ == '__main__':
