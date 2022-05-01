@@ -30,7 +30,9 @@ def create_cfg(data_root,
                pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth',
                train_args=None,
                dataset_type='RUGDDataset',
-               len_classes=None):
+               len_classes=None,
+               img_scale = (688, 550),
+               crop=(256, 256)):
     if train_args is None:
         train_args = {}
     # Main config file - base file
@@ -50,13 +52,13 @@ def create_cfg(data_root,
     cfg.model.decode_head.num_classes = len_classes
     cfg.model.auxiliary_head.num_classes = len_classes
 
-    cfg.crop_size = (256, 256)
+    cfg.crop_size = crop
 
     # original size of the iccv09data image
     # img_scale = (320, 240)
 
     # Changing to original size of the rugd image
-    img_scale = (688, 550)
+    # img_scale = (688, 550)
 
     cfg.train_pipeline = [
         dict(type='LoadImageFromFile'),
@@ -76,7 +78,7 @@ def create_cfg(data_root,
         dict(
             type='MultiScaleFlipAug',
             img_scale=img_scale,
-            # img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
+            img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
             flip=False,
             transforms=[
                 dict(type='Resize', keep_ratio=True),
@@ -224,7 +226,9 @@ def train_model(data_root=constants.rugd_dir,
                 work_dir='./work_dirs/rugd_sample',
                 config_path='configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py',
                 pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth',
-                train_args=None):
+                train_args=None,
+                img_scale = (688, 550),
+                crop=(256, 256)):
     """
     convert dataset annotation to semantic segmentation map
     """
@@ -246,7 +250,9 @@ def train_model(data_root=constants.rugd_dir,
                      pretrained_path,
                      train_args,
                      dataset_type,
-                     len(classes))
+                     len(classes),
+                     img_scale = (688, 550),
+                     crop=(256, 256))
     # Build the dataset
     datasets = [build_dataset(cfg.data.train)]
 
@@ -341,7 +347,9 @@ def main():
                              work_dir=dict_args['work_dir'],
                              config_path=dict_args['config_path'],
                              pretrained_path=dict_args['pretrained_path'],
-                             train_args=dict_args['train_args'])
+                             train_args=dict_args['train_args'],
+                             img_scale = dict_args['img_scale'],
+                             crop=dict_args['crop'])
 
     print("Training completed. Inferring.")
     apply_inference_multi_images(model,
