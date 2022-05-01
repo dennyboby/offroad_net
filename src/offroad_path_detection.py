@@ -306,6 +306,9 @@ def load_yaml(yaml_path):
         for key, val in dictionary.items():
             dict_args[key] = val
 
+    dict_args["img_scale"] = tuple(dict_args["img_scale"])
+    dict_args["crop"] = tuple(dict_args["crop"])
+    dict_args["ratio_range"] = tuple(dict_args["ratio_range"])
     return dict_args
 
 
@@ -346,10 +349,10 @@ def main():
     """
     dir_data = "work_dirs/rugd_full/pspnet_r50-d8"
     # img_dir = ""
-    list_sub_dirs = []
-    for rootdir, dirs, files in os.walk(os.path.join(dir_data)):
-        for subdir in dirs:
-            list_sub_dirs.append(subdir)
+    # list_sub_dirs = []
+    # for rootdir, dirs, files in os.walk(os.path.join(dir_data)):
+    #     for subdir in dirs:
+    #         list_sub_dirs.append(subdir)
     setup()
     args = parse_args()
     dict_args = load_yaml(args.yaml_path)
