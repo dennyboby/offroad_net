@@ -12,4 +12,4 @@ train_args:
   max_iters: 1200
   log_interval: 100
   eval_interval: 200
-  checkpoint_interval: 200
+  checkpoint_interval: 600
