@@ -148,7 +148,11 @@ def apply_inference_multi_images(model,
                                  img_size=(688, 550)
                                  ):
 
-    list_sub_dirs = ["test1", "test2", "test3"]
+    list_sub_dirs = []
+    for it in os.scandir(os.path.join(dir_data, img_dir)):
+        if it.is_dir():
+            list_sub_dirs.append(it.path)
+
     save_path = os.path.join(work_dir, infer_dir)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
