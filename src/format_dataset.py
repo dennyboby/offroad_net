@@ -111,10 +111,14 @@ def update_data_config(cfg,
                        img_dir,
                        ann_dir,
                        dataset_type='RUGDDataset',
+                       mean=None,
                        **kwargs):
     """
 
     """
+    if mean==None:
+        mean=[123.675, 116.28, 103.53]
+
     cfg.dataset_type = dataset_type
     cfg.data_root = data_root
 
@@ -122,7 +126,7 @@ def update_data_config(cfg,
     cfg.data.workers_per_gpu = kwargs.get("workers_per_gpu", 8)
 
     cfg.img_norm_cfg = dict(
-        mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+        mean, std=[58.395, 57.12, 57.375], to_rgb=True)
 
     # TODO: Study this, and change based on our dataset
     #  mean and std. dev of the data

@@ -32,7 +32,8 @@ def create_cfg(data_root,
                dataset_type='RUGDDataset',
                len_classes=None,
                img_scale = (688, 550),
-               crop=(256, 256)):
+               crop=(256, 256),
+               mean=None):
     if train_args is None:
         train_args = {}
     # Main config file - base file
@@ -92,8 +93,9 @@ def create_cfg(data_root,
     cfg = fd.update_data_config(cfg,
                                 data_root,
                                 img_dir,
-                                ann_dir,
-                                dataset_type=dataset_type)
+                                ann_dir,                               
+                                dataset_type=dataset_type, 
+                                mean=mean)
 
     # We can still use the pre-trained Mask RCNN model though we do not need to
     # use the mask branch
@@ -228,7 +230,8 @@ def train_model(data_root=constants.rugd_dir,
                 pretrained_path='checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth',
                 train_args=None,
                 img_scale = (688, 550),
-                crop=(256, 256)):
+                crop=(256, 256),
+                mean=None):
     """
     convert dataset annotation to semantic segmentation map
     """
@@ -252,7 +255,8 @@ def train_model(data_root=constants.rugd_dir,
                      dataset_type,
                      len(classes),
                      img_scale = (688, 550),
-                     crop=(256, 256))
+                     crop=(256, 256),
+                     mean=mean)
     # Build the dataset
     datasets = [build_dataset(cfg.data.train)]
 
@@ -349,7 +353,8 @@ def main():
                              pretrained_path=dict_args['pretrained_path'],
                              train_args=dict_args['train_args'],
                              img_scale = dict_args['img_scale'],
-                             crop=dict_args['crop'])
+                             crop=dict_args['crop'],
+                             mean=dict_args['mean'])
 
     print("Training completed. Inferring.")
     apply_inference_multi_images(model,
