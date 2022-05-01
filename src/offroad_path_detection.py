@@ -156,14 +156,19 @@ def apply_inference_multi_images(model,
     save_path = os.path.join(work_dir, infer_dir)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
+        print(f"created: {save_path}")
 
     for sub_dir in list_sub_dirs:
         if not os.path.exists(osp.join(save_path, sub_dir)):
             os.makedirs(osp.join(save_path, sub_dir))
+            print(f"created: {osp.join(save_path, sub_dir)}")
 
     for sub_dir in list_sub_dirs:
-        list_images = [filename for filename in
-                       mmcv.scandir(osp.join(dir_data, img_dir, sub_dir), suffix='.jpg')]
+        search_dir = osp.join(dir_data, img_dir, sub_dir)
+        extension = '.png'
+        print(f"Searching images in : {search_dir} with {extension} extension.")
+        list_images = [filename for filename in mmcv.scandir(search_dir, suffix=extension)]
+        print(f"{len(list_images)}")
         for img_index, image in enumerate(list_images):
             print(f"Running inference on: {img_index} {image}")
             apply_inference(model,
