@@ -156,14 +156,16 @@ def apply_inference(model,
 def apply_inference_multi_images(model,
                                  cfg,
                                  dir_data=constants.rugd_dir,
-                                 img_dir='inference_images',
+                                 inf_img_dir='inference_images',
                                  work_dir="work",
                                  infer_dir="inference_output",
                                  palette=constants.rugd_palette,
                                  img_size=(688, 550),
-                                 suffix='.jpg'):
+                                 suffix='.jpg',
+                                 list_sub_dirs=None):
+    if list_sub_dirs is None:
+        list_sub_dirs = ["test1", "test2", "test3"]
 
-    list_sub_dirs = ["test1", "test2", "test3"]
     save_path = os.path.join(work_dir, infer_dir)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -174,14 +176,14 @@ def apply_inference_multi_images(model,
 
     for sub_dir in list_sub_dirs:
         list_images = [filename for filename in
-                       mmcv.scandir(osp.join(dir_data, img_dir, sub_dir), suffix)]
+                       mmcv.scandir(osp.join(dir_data, inf_img_dir, sub_dir), suffix)]
         for img_index, image in enumerate(list_images):
             print(f"Running inference on: {img_index} {image}")
             apply_inference(model,
                             cfg,
                             img_size=img_size,
                             dir_data=dir_data,
-                            img_dir=img_dir,
+                            inf_img_dir=inf_img_dir,
                             image_name=osp.join(sub_dir, image),
                             save_path=save_path,
                             palette=palette
@@ -377,11 +379,12 @@ def main():
     apply_inference_multi_images(model,
                                  cfg,
                                  dir_data=dict_args['data_root'],
-                                 img_dir=dict_args['img_dir'],
+                                 inf_img_dir=dict_args['inf_img_dir'],
                                  work_dir=dict_args['work_dir'],
                                  palette=palette,
                                  img_size=dict_args['img_scale'],
-                                 suffix=dict_args['suffix'])
+                                 suffix=dict_args['suffix'],
+                                 list_sub_dirs=dict_args['list_sub_dirs'])
 
 
 if __name__ == '__main__':
