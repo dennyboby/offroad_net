@@ -24,4 +24,5 @@ seg_pad_val: 255
 pad_val : 0
 flip_ratio : 0.5
 suffix : '.jpg'
-img_dir : 'inference_images'
+inf_img_dir : 'inference_images'
+list_sub_dirs : ["test1", "test2", "test3"]
