@@ -148,10 +148,10 @@ def apply_inference_multi_images(model,
                                  img_size=(688, 550)
                                  ):
 
-    list_sub_dirs = []
-    for it in os.scandir(os.path.join(dir_data, img_dir)):
-        if it.is_dir():
-            list_sub_dirs.append(it.path)
+    list_sub_dirs = ["inf_images"]
+    # for rootdir, dirs, files in os.walk(os.path.join(dir_data, img_dir)):
+    #     for subdir in dirs:
+    #         list_sub_dirs.append(subdir)
 
     save_path = os.path.join(work_dir, infer_dir)
     if not os.path.exists(save_path):
@@ -306,6 +306,12 @@ def main():
     config_path = 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
 
     """
+    dir_data = "work_dirs/rugd_full/pspnet_r50-d8"
+    # img_dir = ""
+    list_sub_dirs = []
+    for rootdir, dirs, files in os.walk(os.path.join(dir_data)):
+        for subdir in dirs:
+            list_sub_dirs.append(subdir)
     setup()
     args = parse_args()
     dict_args = load_yaml(args.yaml_path)
