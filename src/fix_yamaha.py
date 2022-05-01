@@ -1,6 +1,7 @@
 import pandas as pd
 import os.path as osp
 import os
+import shutil
 import mmcv
 import format_dataset as fd
 
@@ -27,15 +28,20 @@ def get_files(root, list_suffix=None):
     return list_files
 
 
-def get_yamaha_files(data_root="yamaha_v0", ann_dir="", split_dir="splits", list_suffix=None):
+def get_yamaha_files(data_root="yamaha_v0", list_suffix=None):
     # list_files = mmcv.scandir(osp.join(data_root, ann_dir), suffix=suffix)
     list_files = get_files(data_root, list_suffix)
     list_files = [filename for filename in list_files]
     return list_files
 
 
-def create_out_dir(list_files, dir_out="yamaha_v1", data_root="yamaha_v0", ann_dir="", split_dir="splits",
-                   suffix=".png"):
+def create_out_dir(list_files,
+                   dir_out="yamaha_v1",
+                   data_root="yamaha_v0",
+                   img_dir="images",
+                   ann_dir="annotations",
+                   split_dir="splits",
+                   list_suffix=None):
     print(f"Creating yamaha_v1 dataset:")
 
     print(f"Making dirs: ")
@@ -65,9 +71,25 @@ def create_out_dir(list_files, dir_out="yamaha_v1", data_root="yamaha_v0", ann_d
         # print(f"{f_index}: {new_file_name}")
         list_new_files.append(new_file_name)
 
-    print(f"Move to all RGB images to images folder and labels images to annotations folder")
-    for f_index, filename in enumerate(list_new_files):
-        sub_dir = filename.split()
+    print(f"Copy files: all RGB images to images folder; labels images to annotations folder")
+    for f_index, filepath in enumerate(list_files):
+        list_split = filepath.split('/')
+        # img_type is either rgb image or labels image
+        img_type = list_split[-2]
+
+        new_filepath = os.path.join('/'.join(list_split[:-2]), f"{list_split[-2]}_{list_split[-1]}")
+        if img_type == "rgb.jpg":
+            src_path = filepath
+            dest_path = new_filepath
+            shutil.copy2(src_path, dest_path)
+
+        elif img_type == "labels.png":
+            src_path = filepath
+            dest_path = new_filepath
+            shutil.copy2(src_path, dest_path)
+
+        else:
+            print(f"Wrong img_type: {f_index}: {filename}")
 
     print(f"train.txt and val.txt in splits folder")
     with open(osp.join(split_dir, "train.txt"), "w") as fh_train:
