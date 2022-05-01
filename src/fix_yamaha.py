@@ -111,7 +111,7 @@ def create_out_dir(list_files,
 
 
 def main():
-    data_root = "temp_yamaha"
+    data_root = "yamaha_v0"
     list_files = get_yamaha_files(data_root)
     create_out_dir(list_files)
 
