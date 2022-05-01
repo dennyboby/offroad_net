@@ -10,7 +10,8 @@ from mmseg.datasets.custom import CustomDataset
 
 import constants
 
-#test
+
+# test
 # This code just scans the directory and creates a map based on the class color maps
 # This need not be run for RUGD as we already have what we need
 # list_file_names = mmcv.scandir(osp.join(iccv_data_root, ann_dir), suffix='.regions.txt')
@@ -92,10 +93,22 @@ class OffRoadDataset(CustomDataset):
         assert osp.exists(self.img_dir) and self.split is not None
 
 
+@DATASETS.register_module()
+class YamahaDataset(CustomDataset):
+    CLASSES = constants.yamaha_classes
+    PALETTE = constants.yamaha_palette
+
+    def __init__(self, split, **kwargs):
+        super().__init__(img_suffix='.jpg', seg_map_suffix='.png',
+                         split=split, **kwargs)
+        assert osp.exists(self.img_dir) and self.split is not None
+
+
 def get_dataset_type(dataset):
     dict_dataset_type = {
         'rugd': 'RUGDDataset',
-        'offroad': 'OffRoadDataset'
+        'offroad': 'OffRoadDataset',
+        'yamaha': 'YamahaDataset'
     }
     return dict_dataset_type[dataset]
 
@@ -117,11 +130,11 @@ def update_data_config(cfg,
     """
 
     """
-    if mean==None:
-        mean=[123.675, 116.28, 103.53]
+    if mean is None:
+        mean = [123.675, 116.28, 103.53]
 
-    if std==None:
-        std=[58.395, 57.12, 57.375]
+    if std is None:
+        std = [58.395, 57.12, 57.375]
 
     cfg.dataset_type = dataset_type
     cfg.data_root = data_root
@@ -129,8 +142,9 @@ def update_data_config(cfg,
     cfg.data.samples_per_gpu = kwargs.get("samples_per_gpu", 8)
     cfg.data.workers_per_gpu = kwargs.get("workers_per_gpu", 8)
 
-    cfg.img_norm_cfg = dict(
-        mean, std, to_rgb=True)
+    cfg.img_norm_cfg = dict(mean=mean,
+                            std=std,
+                            to_rgb=True)
 
     # TODO: Study this, and change based on our dataset
     #  mean and std. dev of the data
