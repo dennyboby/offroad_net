@@ -1,18 +1,18 @@
-data_root: "RUGD/RUGD_sample-data"
+data_root: "RUGD/RUGD_full"
 dataset: 'rugd'
 do_format_data: false
 img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
 true_ann_dir: 'annotations'
-work_dir: './work_dirs/rugd/upernet_vit-b16_ln_mln'
-config_path: 'configs/offroadnet/upernet_vit-b16_ln_mln_512x512_160k_ade20k.py'
-pretrained_path: 'checkpoints/upernet_vit-b16_ln_mln_512x512_160k_ade20k_20210621_172828-f444c077.pth'
+work_dir: './work_dirs/rugd_full/encnet_r101-d8'
+config_path: 'configs/offroadnet/encnet_r101-d8_512x1024_80k_cityscapes.py'
+pretrained_path: 'checkpoints/encnet_r101-d8_512x1024_80k_cityscapes_20200622_003555-1de64bec.pth'
 train_args:
-  max_iters: 6
-  log_interval: 2
-  eval_interval: 2
-  checkpoint_interval: 3
+  max_iters: 1200
+  log_interval: 100
+  eval_interval: 200
+  checkpoint_interval: 600
 img_scale : (688, 550)
 crop : (256, 256)
 mean : [123.675, 116.28, 103.53]
@@ -23,6 +23,6 @@ cat_max_ratio : 0.75
 seg_pad_val: 255
 pad_val : 0
 flip_ratio : 0.5
-suffix : '.jpg'
+suffix : '.png'
 inf_img_dir : 'inference_images'
-list_sub_dirs : ["test1", "test2", "test3"]
+list_sub_dirs : ["test1"]

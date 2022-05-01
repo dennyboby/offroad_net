@@ -169,10 +169,12 @@ def apply_inference_multi_images(model,
     save_path = os.path.join(work_dir, infer_dir)
     if not os.path.exists(save_path):
         os.makedirs(save_path)
+        print(f"created: {save_path}")
 
     for sub_dir in list_sub_dirs:
         if not os.path.exists(osp.join(save_path, sub_dir)):
             os.makedirs(osp.join(save_path, sub_dir))
+            print(f"created: {osp.join(save_path, sub_dir)}")
 
     for sub_dir in list_sub_dirs:
         list_images = [filename for filename in
@@ -316,6 +318,9 @@ def get_classes_palette(dataset):
     elif dataset == 'offroad':
         classes = constants.offroad_classes
         palette = constants.offroad_palette
+    elif dataset == 'yamaha':
+        classes = constants.yamaha_classes
+        palette = constants.yamaha_palette
     else:
         print(f"Wrong dataset!")
 
@@ -339,6 +344,12 @@ def main():
     config_path = 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
 
     """
+    dir_data = "work_dirs/rugd_full/pspnet_r50-d8"
+    # img_dir = ""
+    list_sub_dirs = []
+    for rootdir, dirs, files in os.walk(os.path.join(dir_data)):
+        for subdir in dirs:
+            list_sub_dirs.append(subdir)
     setup()
     args = parse_args()
     dict_args = load_yaml(args.yaml_path)

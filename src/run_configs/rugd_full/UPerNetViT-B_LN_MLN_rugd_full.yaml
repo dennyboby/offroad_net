@@ -5,14 +5,14 @@ img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
 true_ann_dir: 'annotations'
-work_dir: './work_dirs/rugd_full/offroadnet_r101-d8'
-config_path: 'configs/offroadnet/offroadnet_r101-d8_512x1024_40k_cityscapes.py'
-pretrained_path: 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
+work_dir: './work_dirs/rugd_full/upernet_vit-b16_ln_mln'
+config_path: 'configs/offroadnet/upernet_vit-b16_ln_mln_512x512_160k_ade20k.py'
+pretrained_path: 'checkpoints/upernet_vit-b16_ln_mln_512x512_160k_ade20k_20210621_172828-f444c077.pth'
 train_args:
-  max_iters: 10000
-  log_interval: 1000
-  eval_interval: 1000
-  checkpoint_interval: 2000
+  max_iters: 1200
+  log_interval: 100
+  eval_interval: 200
+  checkpoint_interval: 600
 img_scale : (688, 550)
 crop : (256, 256)
 mean : [123.675, 116.28, 103.53]
@@ -23,6 +23,6 @@ cat_max_ratio : 0.75
 seg_pad_val: 255
 pad_val : 0
 flip_ratio : 0.5
-suffix : '.jpg'
+suffix : '.png'
 inf_img_dir : 'inference_images'
-list_sub_dirs : ["test1", "test2", "test3"]
+list_sub_dirs : ["test1"]
