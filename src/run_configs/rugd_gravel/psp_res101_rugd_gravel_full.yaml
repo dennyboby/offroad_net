@@ -13,3 +13,6 @@ train_args:
   log_interval: 100
   eval_interval: 200
   checkpoint_interval: 600
+img_scale : (688, 550)
+crop : (256, 256)
+mean : [123.675, 116.28, 103.53]
