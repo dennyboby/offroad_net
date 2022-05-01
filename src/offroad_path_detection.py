@@ -34,7 +34,13 @@ def create_cfg(data_root,
                img_scale = (688, 550),
                crop=(256, 256),
                mean=None,
-               std=None):
+               std=None,
+               img_ratios =None,
+               ratio_range=(0.5, 2.0),
+               cat_max_ratio=0.75,
+               seg_pad_val=255,
+               pad_val=0,
+               flip_ratio=0.5):
     if train_args is None:
         train_args = {}
     # Main config file - base file
@@ -65,22 +71,25 @@ def create_cfg(data_root,
     cfg.train_pipeline = [
         dict(type='LoadImageFromFile'),
         dict(type='LoadAnnotations'),
-        dict(type='Resize', img_scale=img_scale, ratio_range=(0.5, 2.0)),
-        dict(type='RandomCrop', crop_size=cfg.crop_size, cat_max_ratio=0.75),
-        dict(type='RandomFlip', flip_ratio=0.5),
+        dict(type='Resize', img_scale=img_scale, ratio_range=ratio_range),
+        dict(type='RandomCrop', crop_size=cfg.crop_size, cat_max_ratio=cat_max_ratio),
+        dict(type='RandomFlip', flip_ratio=flip_ratio),
         dict(type='PhotoMetricDistortion'),
         dict(type='Normalize', **cfg.img_norm_cfg),
-        dict(type='Pad', size=cfg.crop_size, pad_val=0, seg_pad_val=255),
+        dict(type='Pad', size=cfg.crop_size, pad_val=pad_val, seg_pad_val=seg_pad_val),
         dict(type='DefaultFormatBundle'),
         dict(type='Collect', keys=['img', 'gt_semantic_seg']),
     ]
+
+    if img_ratios ==None:
+        img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75]
 
     cfg.test_pipeline = [
         dict(type='LoadImageFromFile'),
         dict(
             type='MultiScaleFlipAug',
             img_scale=img_scale,
-            img_ratios=[0.5, 0.75, 1.0, 1.25, 1.5, 1.75],
+            img_ratios=img_ratios,
             flip=False,
             transforms=[
                 dict(type='Resize', keep_ratio=True),
@@ -151,8 +160,8 @@ def apply_inference_multi_images(model,
                                  work_dir="work",
                                  infer_dir="inference_output",
                                  palette=constants.rugd_palette,
-                                 img_size=(688, 550)
-                                 ):
+                                 img_size=(688, 550),
+                                 suffix='.jpg'):
 
     list_sub_dirs = ["inf_images"]
     # for rootdir, dirs, files in os.walk(os.path.join(dir_data, img_dir)):
@@ -170,11 +179,8 @@ def apply_inference_multi_images(model,
             print(f"created: {osp.join(save_path, sub_dir)}")
 
     for sub_dir in list_sub_dirs:
-        search_dir = osp.join(dir_data, img_dir, sub_dir)
-        extension = '.png'
-        print(f"Searching images in : {search_dir} with {extension} extension.")
-        list_images = [filename for filename in mmcv.scandir(search_dir, suffix=extension)]
-        print(f"{len(list_images)}")
+        list_images = [filename for filename in
+                       mmcv.scandir(osp.join(dir_data, img_dir, sub_dir), suffix)]
         for img_index, image in enumerate(list_images):
             print(f"Running inference on: {img_index} {image}")
             apply_inference(model,
@@ -234,7 +240,13 @@ def train_model(data_root=constants.rugd_dir,
                 img_scale = (688, 550),
                 crop=(256, 256),
                 mean=None,
-                std=None):
+                std=None,
+                img_ratios= None,
+                ratio_range=(0.5, 2.0),
+                cat_max_ratio=0.75,
+                seg_pad_val=255,
+                pad_val=0,
+                flip_ratio=0.5):
     """
     convert dataset annotation to semantic segmentation map
     """
@@ -260,7 +272,13 @@ def train_model(data_root=constants.rugd_dir,
                      img_scale =img_scale,
                      crop=crop,
                      mean=mean,
-                     std=std)
+                     std=std,
+                     img_ratios=img_ratios,
+                     ratio_range=ratio_range,
+                     cat_max_ratio=cat_max_ratio,
+                     seg_pad_val=seg_pad_val,
+                     pad_val=pad_val,
+                     flip_ratio=flip_ratio)
     # Build the dataset
     datasets = [build_dataset(cfg.data.train)]
 
@@ -343,6 +361,9 @@ def main():
 
     print(utils.print_dict(dict_args, "dict_args to the training"))
 
+    print(dict_args['mean'])
+    print(type(dict_args['mean']))
+
     model, cfg = train_model(data_root=dict_args['data_root'],
                              do_format_data=dict_args['do_format_data'],
                              img_dir=dict_args['img_dir'],
@@ -359,14 +380,23 @@ def main():
                              img_scale = dict_args['img_scale'],
                              crop=dict_args['crop'],
                              mean=dict_args['mean'],
-                             std=dict_args['std'])
+                             std=dict_args['std'],
+                             img_ratios= dict_args['img_ratios'],
+                             ratio_range=dict_args['ratio_range'],
+                             cat_max_ratio=dict_args['cat_max_ratio'],
+                             seg_pad_val=dict_args['seg_pad_val'],
+                             pad_val=dict_args['pad_val'],
+                             flip_ratio=dict_args['flip_ratio'])
 
     print("Training completed. Inferring.")
     apply_inference_multi_images(model,
                                  cfg,
                                  dir_data=dict_args['data_root'],
+                                 img_dir=dict_args['img_dir'],
                                  work_dir=dict_args['work_dir'],
-                                 palette=palette)
+                                 palette=palette,
+                                 img_size=dict_args['img_scale'],
+                                 suffix=dict_args['suffix'])
 
 
 if __name__ == '__main__':
