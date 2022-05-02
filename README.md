@@ -20,185 +20,226 @@
 </div>
 <br />
 
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/mmsegmentation)](https://pypi.org/project/mmsegmentation/)
-[![PyPI](https://img.shields.io/pypi/v/mmsegmentation)](https://pypi.org/project/mmsegmentation)
-[![docs](https://img.shields.io/badge/docs-latest-blue)](https://mmsegmentation.readthedocs.io/en/latest/)
-[![badge](https://github.com/open-mmlab/mmsegmentation/workflows/build/badge.svg)](https://github.com/open-mmlab/mmsegmentation/actions)
-[![codecov](https://codecov.io/gh/open-mmlab/mmsegmentation/branch/master/graph/badge.svg)](https://codecov.io/gh/open-mmlab/mmsegmentation)
-[![license](https://img.shields.io/github/license/open-mmlab/mmsegmentation.svg)](https://github.com/open-mmlab/mmsegmentation/blob/master/LICENSE)
-[![issue resolution](https://isitmaintained.com/badge/resolution/open-mmlab/mmsegmentation.svg)](https://github.com/open-mmlab/mmsegmentation/issues)
-[![open issues](https://isitmaintained.com/badge/open/open-mmlab/mmsegmentation.svg)](https://github.com/open-mmlab/mmsegmentation/issues)
+[comment]: <> ([![PyPI - Python Version]&#40;https://img.shields.io/pypi/pyversions/mmsegmentation&#41;]&#40;https://pypi.org/project/mmsegmentation/&#41;)
+
+[comment]: <> ([![PyPI]&#40;https://img.shields.io/pypi/v/mmsegmentation&#41;]&#40;https://pypi.org/project/mmsegmentation&#41;)
+
+[comment]: <> ([![docs]&#40;https://img.shields.io/badge/docs-latest-blue&#41;]&#40;https://mmsegmentation.readthedocs.io/en/latest/&#41;)
+
+[comment]: <> ([![badge]&#40;https://github.com/open-mmlab/mmsegmentation/workflows/build/badge.svg&#41;]&#40;https://github.com/open-mmlab/mmsegmentation/actions&#41;)
+
+[comment]: <> ([![codecov]&#40;https://codecov.io/gh/open-mmlab/mmsegmentation/branch/master/graph/badge.svg&#41;]&#40;https://codecov.io/gh/open-mmlab/mmsegmentation&#41;)
+
+[comment]: <> ([![license]&#40;https://img.shields.io/github/license/open-mmlab/mmsegmentation.svg&#41;]&#40;https://github.com/open-mmlab/mmsegmentation/blob/master/LICENSE&#41;)
+
+[comment]: <> ([![issue resolution]&#40;https://isitmaintained.com/badge/resolution/open-mmlab/mmsegmentation.svg&#41;]&#40;https://github.com/open-mmlab/mmsegmentation/issues&#41;)
+
+[comment]: <> ([![open issues]&#40;https://isitmaintained.com/badge/open/open-mmlab/mmsegmentation.svg&#41;]&#40;https://github.com/open-mmlab/mmsegmentation/issues&#41;)
 
 Documentation: https://mmsegmentation.readthedocs.io/
 
-English | [简体中文](README_zh-CN.md)
+[comment]: <> (English | [简体中文]&#40;README_zh-CN.md&#41;)
 
 ## Introduction
 
-MMSegmentation is an open source semantic segmentation toolbox based on PyTorch.
-It is a part of the OpenMMLab project.
+OffroadNet is based on the MMSegmentation library which is an open source semantic segmentation toolbox based on PyTorch and is a part of the OpenMMLab project.
 
 The master branch works with **PyTorch 1.5+**.
 
-![demo image](resources/seg_demo.gif)
+The inference on the **creek** video sequence as part of the test split of RUGD Dataset.
+![demo image](resources/inference_gifs/creek.gif)
 
-### Major features
+The inference on the **trail-7** video sequence as part of the test split of RUGD Dataset.
+![demo image](resources/inference_gifs/trail-7.gif)
 
-- **Unified Benchmark**
+The inference on the **park-1** video sequence as part of the test split of RUGD Dataset.
+![demo image](resources/inference_gifs/park-1.gif)
 
-  We provide a unified benchmark toolbox for various semantic segmentation methods.
+The inference on the **trail-13** video sequence as part of the test split of RUGD Dataset.
+![demo image](resources/inference_gifs/trail-13.gif)
 
-- **Modular Design**
+### Running the scripts
 
-  We decompose the semantic segmentation framework into different components and one can easily construct a customized semantic segmentation framework by combining different modules.
+- **Calculate Image Statistics**
 
-- **Support of multiple methods out of box**
+```shell
+cd offroad_net
+source py39_dl/bin/activate
 
-  The toolbox directly supports popular and contemporary semantic segmentation frameworks, *e.g.* PSPNet, DeepLabV3, PSANet, DeepLabV3+, etc.
+echo "Starting to run: python src/calc_image_stats.py "
+python  src/calc_image_stats.py
+```
 
-- **High efficiency**
+- **Training multiple models in WPI Turing cluster**
 
-  The training speed is faster than or comparable to other codebases.
+```shell
+module load cuda11.1/toolkit/11.1.1
+module load cudnn/8.1.1.33-11.2/3k5bbs63
+
+source py39_dl/bin/activate
+
+echo "Starting to run src/offroad_path_detection.py on psp_res50 for all class RUGD full"
+python src/offroad_path_detection.py --yaml_path=src/run_configs/rugd_full/psp_res50_rugd_full_10k.yaml
+
+echo "Starting to run src/offroad_path_detection.py on encnet_res101 for all class RUGD full"
+python src/offroad_path_detection.py --yaml_path=src/run_configs/rugd_full/encnet_res101_rugd_full_10k.yaml
+```
+- **Data pre-processing**
+
+```shell
+echo "Starting to run src/dataset_preprocesssing.py"
+python src/dataset_preprocesssing.py
+```
+- **Sample yaml file**
+
+```yaml
+data_root: "RUGD/RUGD_full"
+dataset: 'rugd'
+do_format_data: false
+img_dir: 'images'
+ann_dir: 'labels'
+split_dir: 'splits'
+true_ann_dir: 'annotations'
+work_dir: './work_dirs/rugd_full_10k/encnet_r101-d8'
+config_path: 'configs/offroadnet/encnet_r101-d8_512x1024_80k_cityscapes.py'
+pretrained_path: 'checkpoints/encnet_r101-d8_512x1024_80k_cityscapes_20200622_003555-1de64bec.pth'
+train_args:
+  max_iters: 10000
+  log_interval: 1000
+  eval_interval: 5000
+  checkpoint_interval: 5000
+img_scale : [688, 550]
+crop : [256, 256]
+mean : [102.9630, 102.9438, 102.3976]
+std : [69.8548, 70.3098, 70.9376]
+img_ratios : [0.5, 0.75, 1.0, 1.25, 1.5, 1.75]
+ratio_range : [0.5, 2.0]
+cat_max_ratio : 0.75
+seg_pad_val: 255
+pad_val : 0
+flip_ratio : 0.5
+suffix : '.png'
+inf_img_dir : 'inference_images'
+list_sub_dirs : ["test1"]
+
+```
 
 ## License
 
 This project is released under the [Apache 2.0 license](LICENSE).
 
-## Changelog
+## Results
 
-v0.23.0 was released in 4/1/2022.
-Please refer to [changelog.md](docs/en/changelog.md) for details and release history.
-
-## Benchmark and model zoo
-
-Results and models are available in the [model zoo](docs/en/model_zoo.md).
-
-Supported backbones:
-
-- [x] ResNet (CVPR'2016)
-- [x] ResNeXt (CVPR'2017)
-- [x] [HRNet (CVPR'2019)](configs/hrnet)
-- [x] [ResNeSt (ArXiv'2020)](configs/resnest)
-- [x] [MobileNetV2 (CVPR'2018)](configs/mobilenet_v2)
-- [x] [MobileNetV3 (ICCV'2019)](configs/mobilenet_v3)
-- [x] [Vision Transformer (ICLR'2021)](configs/vit)
-- [x] [Swin Transformer (ICCV'2021)](configs/swin)
-- [x] [Twins (NeurIPS'2021)](configs/twins)
-- [x] [ConvNeXt (CVPR'2022)](configs/convnext)
-- [x] [BEiT (ICLR'2022)](configs/beit)
-
-Supported methods:
-
-- [x] [FCN (CVPR'2015/TPAMI'2017)](configs/fcn)
-- [x] [ERFNet (T-ITS'2017)](configs/erfnet)
-- [x] [UNet (MICCAI'2016/Nat. Methods'2019)](configs/unet)
-- [x] [PSPNet (CVPR'2017)](configs/pspnet)
-- [x] [DeepLabV3 (ArXiv'2017)](configs/deeplabv3)
-- [x] [BiSeNetV1 (ECCV'2018)](configs/bisenetv1)
-- [x] [PSANet (ECCV'2018)](configs/psanet)
-- [x] [DeepLabV3+ (CVPR'2018)](configs/deeplabv3plus)
-- [x] [UPerNet (ECCV'2018)](configs/upernet)
-- [x] [ICNet (ECCV'2018)](configs/icnet)
-- [x] [NonLocal Net (CVPR'2018)](configs/nonlocal_net)
-- [x] [EncNet (CVPR'2018)](configs/encnet)
-- [x] [Semantic FPN (CVPR'2019)](configs/sem_fpn)
-- [x] [DANet (CVPR'2019)](configs/danet)
-- [x] [APCNet (CVPR'2019)](configs/apcnet)
-- [x] [EMANet (ICCV'2019)](configs/emanet)
-- [x] [CCNet (ICCV'2019)](configs/ccnet)
-- [x] [DMNet (ICCV'2019)](configs/dmnet)
-- [x] [ANN (ICCV'2019)](configs/ann)
-- [x] [GCNet (ICCVW'2019/TPAMI'2020)](configs/gcnet)
-- [x] [FastFCN (ArXiv'2019)](configs/fastfcn)
-- [x] [Fast-SCNN (ArXiv'2019)](configs/fastscnn)
-- [x] [ISANet (ArXiv'2019/IJCV'2021)](configs/isanet)
-- [x] [OCRNet (ECCV'2020)](configs/ocrnet)
-- [x] [DNLNet (ECCV'2020)](configs/dnlnet)
-- [x] [PointRend (CVPR'2020)](configs/point_rend)
-- [x] [CGNet (TIP'2020)](configs/cgnet)
-- [x] [BiSeNetV2 (IJCV'2021)](configs/bisenetv2)
-- [x] [STDC (CVPR'2021)](configs/stdc)
-- [x] [SETR (CVPR'2021)](configs/setr)
-- [x] [DPT (ArXiv'2021)](configs/dpt)
-- [x] [Segmenter (ICCV'2021)](configs/segmenter)
-- [x] [SegFormer (NeurIPS'2021)](configs/segformer)
-- [x] [K-Net (NeurIPS'2021)](configs/knet)
-
-Supported datasets:
-
-- [x] [Cityscapes](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#cityscapes)
-- [x] [PASCAL VOC](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#pascal-voc)
-- [x] [ADE20K](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#ade20k)
-- [x] [Pascal Context](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#pascal-context)
-- [x] [COCO-Stuff 10k](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#coco-stuff-10k)
-- [x] [COCO-Stuff 164k](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#coco-stuff-164k)
-- [x] [CHASE_DB1](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#chase-db1)
-- [x] [DRIVE](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#drive)
-- [x] [HRF](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#hrf)
-- [x] [STARE](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#stare)
-- [x] [Dark Zurich](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#dark-zurich)
-- [x] [Nighttime Driving](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#nighttime-driving)
-- [x] [LoveDA](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#loveda)
-- [x] [Potsdam](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#isprs-potsdam)
-- [x] [Vaihingen](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#isprs-vaihingen)
-- [x] [iSAID](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#isaid)
+<table>
+    <tr>
+        <td>Backbone</td>
+        <td>DecodeHead</td>
+        <td>AuxillaryHead</td>
+        <td>Metrics</td>
+        <td>A</td>
+        <td>G</td>
+        <td>R</td>
+        <td>C</td>
+        <td>O</td>
+        <td>OG</td>
+    </tr>
+    <tr>
+        <td>ResNetV1c 50</td>
+        <td>PSPHead</td>
+        <td>FCNHead</td>
+        <td>mIoU</td>
+        <td>58.66</td>
+        <td>81.24</td>
+        <td>67.43</td>
+        <td>39.78</td>
+        <td>37.14</td>
+        <td>80.73</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>mAcc</td>
+        <td>93.72</td>
+        <td>\textbf{90.31}</td>
+        <td>\textbf{96.42}</td>
+        <td>41.22</td>
+        <td>43.24</td>
+        <td>87.04</td>
+    </tr>
+    <tr>
+        <td>ResNetV1c 101</td>
+        <td>OffRoadHead</td>
+        <td>FCNHead</td>
+        <td>mIoU</td>
+        <td>\textbf{59.64}</td>
+        <td>\textbf{92.37}</td>
+        <td>\textbf{85.24}</td>
+        <td>\textbf{43.99}</td>
+        <td>\textbf{42.85}</td>
+        <td>\textbf{82.18}</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>mAcc</td>
+        <td>93.47</td>
+        <td>88.66</td>
+        <td>94.45</td>
+        <td>\textbf{63.73}</td>
+        <td>\textbf{48.87}</td>
+        <td>88.73</td>
+    </tr>
+    <tr>
+        <td>ResNetV1c 101</td>
+        <td>EncHead</td>
+        <td>FCNHead</td>
+        <td>mIoU</td>
+        <td>54.87</td>
+        <td>78.78</td>
+        <td>79.3</td>
+        <td>34.39</td>
+        <td>40.52</td>
+        <td>80.09</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>mAcc</td>
+        <td>\textbf{94.0}</td>
+        <td>87.18</td>
+        <td>93.58</td>
+        <td>40.51</td>
+        <td>48.78</td>
+        <td>\textbf{90.18}</td>
+    </tr>
+</table>
 
 ## Installation
 
 Please refer to [get_started.md](docs/en/get_started.md#installation) for installation and [dataset_prepare.md](docs/en/dataset_prepare.md#prepare-datasets) for dataset preparation.
 
-## Get Started
-
-Please see [train.md](docs/en/train.md) and [inference.md](docs/en/inference.md) for the basic usage of MMSegmentation.
-There are also tutorials for [customizing dataset](docs/en/tutorials/customize_datasets.md), [designing data pipeline](docs/en/tutorials/data_pipeline.md), [customizing modules](docs/en/tutorials/customize_models.md), and [customizing runtime](docs/en/tutorials/customize_runtime.md).
-We also provide many [training tricks](docs/en/tutorials/training_tricks.md) for better training and [useful tools](docs/en/useful_tools.md) for deployment.
-
-A Colab tutorial is also provided. You may preview the notebook [here](demo/MMSegmentation_Tutorial.ipynb) or directly [run](https://colab.research.google.com/github/open-mmlab/mmsegmentation/blob/master/demo/MMSegmentation_Tutorial.ipynb) on Colab.
-
-Please refer to [FAQ](docs/en/faq.md) for frequently asked questions.
 
 ## Citation
 
 If you find this project useful in your research, please consider cite:
 
 ```bibtex
-@misc{mmseg2020,
-    title={{MMSegmentation}: OpenMMLab Semantic Segmentation Toolbox and Benchmark},
-    author={MMSegmentation Contributors},
-    howpublished = {\url{https://github.com/open-mmlab/mmsegmentation}},
-    year={2020}
+@misc{offroadnet2022,
+    title={{OffroadNet}: Based on MMSegmentation Toolbox},
+    author={Abhay Chhagan Karade, Denny Boby, Sumukh Sreenivasarao Balakrishna, Shreedhar Kodate},
+    howpublished = {\url{https://github.com/AbhayKarade/offroad_net}},
+    year={2022}
 }
 ```
 
-## Contributing
 
-We appreciate all contributions to improve MMSegmentation. Please refer to [CONTRIBUTING.md](.github/CONTRIBUTING.md) for the contributing guideline.
+## Creating gifs
+```shell
+ffmpeg -y -i file.mp4 -vf palettegen palette.png
 
-## Acknowledgement
+ffmpeg -y -i file.mp4 -i palette.png -filter_complex paletteuse -r 10 -s 480x340 file.gif
+```
 
-MMSegmentation is an open source project that welcome any contribution and feedback.
-We wish that the toolbox and benchmark could serve the growing research
-community by providing a flexible as well as standardized toolkit to reimplement existing methods
-and develop their own new semantic segmentation methods.
-
-## Projects in OpenMMLab
-
-- [MMCV](https://github.com/open-mmlab/mmcv): OpenMMLab foundational library for computer vision.
-- [MIM](https://github.com/open-mmlab/mim): MIM installs OpenMMLab packages.
-- [MMClassification](https://github.com/open-mmlab/mmclassification): OpenMMLab image classification toolbox and benchmark.
-- [MMDetection](https://github.com/open-mmlab/mmdetection): OpenMMLab detection toolbox and benchmark.
-- [MMDetection3D](https://github.com/open-mmlab/mmdetection3d): OpenMMLab's next-generation platform for general 3D object detection.
-- [MMRotate](https://github.com/open-mmlab/mmrotate): OpenMMLab rotated object detection toolbox and benchmark.
-- [MMSegmentation](https://github.com/open-mmlab/mmsegmentation): OpenMMLab semantic segmentation toolbox and benchmark.
-- [MMOCR](https://github.com/open-mmlab/mmocr): OpenMMLab text detection, recognition, and understanding toolbox.
-- [MMPose](https://github.com/open-mmlab/mmpose): OpenMMLab pose estimation toolbox and benchmark.
-- [MMHuman3D](https://github.com/open-mmlab/mmhuman3d): OpenMMLab 3D human parametric model toolbox and benchmark.
-- [MMSelfSup](https://github.com/open-mmlab/mmselfsup): OpenMMLab self-supervised learning toolbox and benchmark.
-- [MMRazor](https://github.com/open-mmlab/mmrazor): OpenMMLab model compression toolbox and benchmark.
-- [MMFewShot](https://github.com/open-mmlab/mmfewshot): OpenMMLab fewshot learning toolbox and benchmark.
-- [MMAction2](https://github.com/open-mmlab/mmaction2): OpenMMLab's next-generation action understanding toolbox and benchmark.
-- [MMTracking](https://github.com/open-mmlab/mmtracking): OpenMMLab video perception toolbox and benchmark.
-- [MMFlow](https://github.com/open-mmlab/mmflow): OpenMMLab optical flow toolbox and benchmark.
-- [MMEditing](https://github.com/open-mmlab/mmediting): OpenMMLab image and video editing toolbox.
-- [MMGeneration](https://github.com/open-mmlab/mmgeneration): OpenMMLab image and video generative models toolbox.
-- [MMDeploy](https://github.com/open-mmlab/mmdeploy): OpenMMLab Model Deployment Framework.
