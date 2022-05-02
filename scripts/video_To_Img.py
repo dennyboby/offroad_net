@@ -6,7 +6,7 @@ import glob
 def videoToimg(success,image):
     count = 0   
     while success:
-        cv2.imwrite("test3/frame%d.jpg" % count, image)     # save frame as JPEG file   
+        cv2.imwrite("images/frame%d.jpg" % count, image)     # save frame as JPEG file   
         success,image = vidcap.read()
         print('Read a new frame: ', success)
         count += 1
@@ -15,7 +15,7 @@ def videoToimg(success,image):
 
 if __name__ == '__main__':
 
-    vidcap = cv2.VideoCapture('test3.mp4')
+    vidcap = cv2.VideoCapture('test.mkv')
     success,image = vidcap.read()
     videoToimg(success,image)
 
