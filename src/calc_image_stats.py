@@ -48,7 +48,8 @@ def get_image_data(data_root, img_dir="images"):
 
 
 def calc_mean_std_dev(data_root, img_dir="images"):
-    image_data = get_image_data(data_root, img_dir)
+    # image_data = get_image_data(data_root, img_dir)
+    image_data = get_image_data(data_root)
 
     image_data_loader = DataLoader(
         image_data,
