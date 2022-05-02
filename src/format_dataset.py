@@ -205,7 +205,8 @@ def format_data(data_root=constants.rugd_dir,
     convert dataset annotation to semantic segmentation map
     """
     transform_seg_map_mode_p(data_root, ann_dir, true_ann_dir, palette)
-    split_dataset(split_dir, data_root, ann_dir)
+    # Due to dataset predefined splitting, we don't need this anymore
+    # split_dataset(split_dir, data_root, ann_dir)
 
 
 def main():

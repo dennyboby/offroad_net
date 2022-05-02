@@ -1,6 +1,6 @@
 data_root: "yamaha_v1"
 dataset: 'yamaha'
-do_format_data: true
+do_format_data: false
 img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
