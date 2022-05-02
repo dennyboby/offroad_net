@@ -33,7 +33,7 @@ def batch_mean_and_sd(loader):
 
 def get_image_data(data_root, img_dir="images"):
     # data_path = os.path.join(data_root, img_dir)
-    data_path = get_image_data(data_root)
+    data_path = data_root
 
     transform_img = transforms.Compose([
         # transforms.Resize(256),
