@@ -22,16 +22,12 @@ for folder in src_dir:
         for i in range(len(test_txt)):
             if image_name in test_txt[i][0]:            
                 shutil.copy(jpgfile, dst_dir)
-                print("yessss")
-    
+
     address_ano=address2+folder+address3
 
     for jpgfile in glob.iglob(os.path.join(address_ano, "*.png")):
         image_name = jpgfile.replace("Rellis-3D 2/0","0")
         image_name=image_name.replace("\\","/") 
         for i in range(len(test_txt)):
-            print(test_txt[i][1])
-            print(image_name)
             if image_name in test_txt[i][1]:            
                 shutil.copy(jpgfile, dst_dir2)
-                print("yessss")
