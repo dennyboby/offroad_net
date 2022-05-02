@@ -151,6 +151,7 @@ def apply_inference(model,
     show_result_pyplot(model, img, result, palette)
 
     plt.savefig(os.path.join(save_path, image_name))
+    plt.close()
 
 
 def apply_inference_multi_images(model,
