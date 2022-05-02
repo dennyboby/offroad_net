@@ -55,7 +55,8 @@ yamaha_classes = (
     "rough trail",
     "smooth trail",
     "obstacle",
-    "truck"
+    "truck",
+    "obstacle2"
 )
 
 yamaha_palette = [
@@ -66,7 +67,8 @@ yamaha_palette = [
     [156, 76, 30],
     [178, 176, 153],
     [255, 0, 128],
-    [255, 255, 255]
+    [255, 255, 255],
+    [255, 0, 0]
 ]
 
 rellis3d_classes = (
