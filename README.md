@@ -50,13 +50,13 @@ The inference on the **creek** video sequence as part of the test split of RUGD 
 ![demo image](resources/inference_gifs/creek.gif)
 
 The inference on the **trail-7** video sequence as part of the test split of RUGD Dataset.
-![demo image](resources/inference_gifs/trail-7.gif)
+![demo image](resources/inference_gifs/trail_7.gif)
 
 The inference on the **park-1** video sequence as part of the test split of RUGD Dataset.
-![demo image](resources/inference_gifs/park-1.gif)
+![demo image](resources/inference_gifs/park_1.gif)
 
 The inference on the **trail-13** video sequence as part of the test split of RUGD Dataset.
-![demo image](resources/inference_gifs/trail-13.gif)
+![demo image](resources/inference_gifs/trail_13.gif)
 
 ### Running the scripts
 
