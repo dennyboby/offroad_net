@@ -52,8 +52,9 @@ def change_segmentation(file_name, red, green, blue, dest_path):
     img, is_class_present = class_segmentor(img, red, green, blue)
 
     # Save image only if the class is present
-    if is_class_present:
-        cv.imwrite(dest_path, img)
+    # if is_class_present:
+    #     cv.imwrite(dest_path, img)
+    cv.imwrite(dest_path, img)
     return is_class_present
 
 
