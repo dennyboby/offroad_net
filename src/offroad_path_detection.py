@@ -135,12 +135,12 @@ def apply_inference(model,
                     cfg,
                     img_size=(688, 550),
                     dir_data=constants.rugd_dir,
-                    img_dir='inference_images',
+                    inf_img_dir='inference_images',
                     image_name="creek_00001.png",
                     save_path=".",
                     palette=constants.rugd_palette
                     ):
-    img_path = os.path.join(dir_data, img_dir, image_name)
+    img_path = os.path.join(dir_data, inf_img_dir, image_name)
     img = mmcv.imread(img_path)
     model.cfg = cfg
     print("Applying inference")
