@@ -1,3 +1,4 @@
+import os
 import os.path as osp
 import numpy as np
 from PIL import Image
@@ -23,6 +24,8 @@ import constants
 #                                                                 '.png')))
 
 def transform_seg_map_mode_p(data_root, ann_dir, true_ann_dir, palette):
+    if not os.path.exists(osp.join(data_root, ann_dir)):
+        os.makedirs(osp.join(data_root, ann_dir))
     # Add code to change the seg map to the required format
     for file in mmcv.scandir(osp.join(data_root, true_ann_dir), suffix='.png'):
         seg_map = cv2.imread(osp.join(data_root, true_ann_dir, file))
