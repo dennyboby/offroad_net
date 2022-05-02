@@ -61,7 +61,8 @@ def calc_mean_std_dev(data_root, img_dir="images"):
 
 
 def batch_mean_std(data_root, img_dir="images", batch_size=2):
-    image_data = get_image_data(data_root, img_dir)
+    # image_data = get_image_data(data_root, img_dir)
+    image_data = get_image_data(data_root)
 
     loader = DataLoader(
         image_data,
