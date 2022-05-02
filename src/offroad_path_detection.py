@@ -401,6 +401,8 @@ def main():
                                  suffix=dict_args['suffix'],
                                  list_sub_dirs=dict_args['list_sub_dirs'])
 
+    print(f"Code completed.")
+
 
 if __name__ == '__main__':
     main()

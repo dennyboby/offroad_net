@@ -1,7 +1,8 @@
 # collapse-hide
+# ref: https://kozodoi.me/python/deep%20learning/pytorch/tutorial/2021/03/08/image-mean-std.html
+# PACKAGES
 
-####### PACKAGES
-
+import os
 import numpy as np
 import pandas as pd
 
@@ -18,7 +19,7 @@ from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 
-####### PARAMS
+# PARAMS
 
 device = torch.device('cpu')
 num_workers = 4
