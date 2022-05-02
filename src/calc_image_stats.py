@@ -95,7 +95,6 @@ def main():
               f"\nmean: \n{mean}"
               f"\nstd_dev: \n{std}")
 
-        mean, std = mean_std(image_data_loader)
         scaled_mean = 255 * mean
         scaled_std_dev = 255 * std
         print(f"Dataset: {data_root}"
