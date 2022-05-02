@@ -81,8 +81,8 @@ def mean_std(loader):
 
 def main():
     list_datasets = [
-        "yamaha_v1",
-        "RUGD/RUGD_full",
+        "ms_yamaha",
+        "ms_rugd",
     ]
     for data_root in list_datasets:
         image_data_loader = calc_mean_std_dev(data_root, img_dir="images")
