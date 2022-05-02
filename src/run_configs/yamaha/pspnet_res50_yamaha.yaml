@@ -13,12 +13,12 @@ train_args:
   log_interval: 100
   eval_interval: 200
   checkpoint_interval: 600
-img_scale : (1024, 544)
-crop : (482, 256)
+img_scale : [1024, 544]
+crop : [482, 256]
 mean : [123.675, 116.28, 103.53]
 std : [58.395, 57.12, 57.375]
 img_ratios : [0.5, 0.75, 1.0, 1.25, 1.5, 1.75]
-ratio_range : (0.5, 2.0)
+ratio_range : [0.5, 2.0]
 cat_max_ratio : 0.75
 seg_pad_val: 255
 pad_val : 0
