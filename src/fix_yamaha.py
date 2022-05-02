@@ -92,6 +92,7 @@ def create_out_dir(list_files,
                 print(f"Wrong sub_dir: {f_index}: {filepath}")
 
         elif img_type == "labels.png":
+            new_file_name.replace("labels", "rgb")
             src_path = filepath
 
             dest_path = os.path.join(dir_out, ann_dir, f"{new_file_name}.{base_ext}")
