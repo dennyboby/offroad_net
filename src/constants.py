@@ -69,6 +69,28 @@ yamaha_palette = [
     [255, 255, 255]
 ]
 
+rellis3d_classes = (
+    "non-traversable low vegetation"
+    "sky",
+    "high vegetation",
+    "traversable grass",
+    "rough trail",
+    "smooth trail",
+    "obstacle",
+    "truck"
+)
+
+rellis3d_palette = [
+    [0, 160, 0],
+    [1, 88, 255],
+    [40, 80, 0],
+    [128, 255, 0],
+    [156, 76, 30],
+    [178, 176, 153],
+    [255, 0, 0],
+    [255, 255, 255]
+]
+
 # import pandas as pd
 #
 # df = pd.read_csv(f"RUGD/RUGD_sample-data/RUGD_annotation-colormap.txt", sep=" ")

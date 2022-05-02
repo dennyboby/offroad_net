@@ -107,6 +107,17 @@ class YamahaDataset(CustomDataset):
         assert osp.exists(self.img_dir) and self.split is not None
 
 
+@DATASETS.register_module()
+class Rellis3dDataset(CustomDataset):
+    CLASSES = constants.rellis3d_classes
+    PALETTE = constants.rellis3d_palette
+
+    def __init__(self, split, **kwargs):
+        super().__init__(img_suffix='.jpg', seg_map_suffix='.png',
+                         split=split, **kwargs)
+        assert osp.exists(self.img_dir) and self.split is not None
+
+
 def get_dataset_type(dataset):
     dict_dataset_type = {
         'rugd': 'RUGDDataset',
