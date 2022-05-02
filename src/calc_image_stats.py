@@ -102,5 +102,30 @@ def main():
               f"\nscaled_std_dev: \n{scaled_std_dev}")
 
 
+"""
+Starting to run: python src/calc_image_stats.py 
+Dataset: ms_yamaha
+mean: 
+tensor([0.4294, 0.4478, 0.4247])
+std_dev: 
+tensor([0.2664, 0.2653, 0.2674])
+Dataset: ms_yamaha
+scaled_mean: 
+tensor([109.4993, 114.1997, 108.3029])
+scaled_std_dev: 
+tensor([67.9276, 67.6512, 68.1809])
+
+Dataset: ms_rugd
+mean: 
+tensor([0.4038, 0.4037, 0.4016])
+std_dev: 
+tensor([0.2739, 0.2757, 0.2782])
+Dataset: ms_rugd
+scaled_mean: 
+tensor([102.9630, 102.9438, 102.3976])
+scaled_std_dev: 
+tensor([69.8548, 70.3098, 70.9376])
+"""
+
 if __name__ == '__main__':
     main()
