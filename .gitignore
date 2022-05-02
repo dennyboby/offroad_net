@@ -122,5 +122,8 @@ mmseg/.mim
 configs/offroadnet/.DS_Store
 slurm*
 *.out
-/src/df_original_data.csv
+/Rellis_3D/
 /yamaha_v0/
+/src/df_original_data.csv
+/temp_yamaha/
+/yamaha_v1/

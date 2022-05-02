@@ -1,3 +1,4 @@
+import os
 import os.path as osp
 import numpy as np
 from PIL import Image
@@ -11,7 +12,8 @@ from mmseg.datasets.custom import CustomDataset
 
 import constants
 
-#test
+
+# test
 # This code just scans the directory and creates a map based on the class color maps
 # This need not be run for RUGD as we already have what we need
 # list_file_names = mmcv.scandir(osp.join(iccv_data_root, ann_dir), suffix='.regions.txt')
@@ -21,28 +23,20 @@ import constants
 #     seg_img.putpalette(np.array(iccv_palette, dtype=np.uint8))
 #     seg_img.save(osp.join(iccv_data_root, ann_dir, file.replace('.regions.txt',
 #                                                                 '.png')))
-def _seg_mode_p(data_root, ann_dir, true_ann_dir, file, palette):
-    print(f"processing_file: {file}")
-    seg_map = cv2.imread(osp.join(data_root, true_ann_dir, file))
-    seg_map_new = np.zeros((seg_map.shape[0], seg_map.shape[1]), dtype=np.uint8)
-    for i in range(seg_map.shape[0]):
-        for j in range(seg_map.shape[1]):
-            seg_map_new[i, j] = palette.index(list(seg_map[i, j, ::-1]))
-    seg_img = Image.fromarray(seg_map_new).convert('P')
-    seg_img.putpalette(np.array(palette, dtype=np.uint8))
-    seg_img.save(osp.join(data_root, ann_dir, file))
-    return f"processed {osp.join(data_root, ann_dir, file)}"
 
-
-def transform_seg_map_mode_p(data_root, ann_dir, true_ann_dir, palette, num_jobs=1):
+def transform_seg_map_mode_p(data_root, ann_dir, true_ann_dir, palette):
+    if not os.path.exists(osp.join(data_root, ann_dir)):
+        os.makedirs(osp.join(data_root, ann_dir))
     # Add code to change the seg map to the required format
-    # color_to_palette_index = {}
-    # for index, color in enumerate(palette):
-    #     color_to_palette_index[tuple(color)] = index
-
-    result = Parallel(n_jobs=num_jobs)(delayed(_seg_mode_p)(data_root, ann_dir, true_ann_dir, file, palette) for file in
-                                       mmcv.scandir(osp.join(data_root, true_ann_dir), suffix='.png'))
-    print(f"result: {result}")
+    for file in mmcv.scandir(osp.join(data_root, true_ann_dir), suffix='.png'):
+        seg_map = cv2.imread(osp.join(data_root, true_ann_dir, file))
+        seg_map_new = np.zeros((seg_map.shape[0], seg_map.shape[1]), dtype=np.uint8)
+        for i in range(seg_map.shape[0]):
+            for j in range(seg_map.shape[1]):
+                seg_map_new[i, j] = palette.index(list(seg_map[i, j, ::-1]))
+        seg_img = Image.fromarray(seg_map_new).convert('P')
+        seg_img.putpalette(np.array(palette, dtype=np.uint8))
+        seg_img.save(osp.join(data_root, ann_dir, file))
 
 
 def split_dataset(split_dir, data_root, ann_dir):
@@ -53,10 +47,13 @@ def split_dataset(split_dir, data_root, ann_dir):
     mmcv.mkdir_or_exist(osp.join(data_root, split_dir))
     filename_list = [osp.splitext(filename)[0] for filename in mmcv.scandir(
         osp.join(data_root, ann_dir), suffix='.png')]
+    np.random.shuffle(filename_list)
+
     with open(osp.join(data_root, split_dir, 'train.txt'), 'w') as f:
         # select first 80% data as train set
         train_length = int(len(filename_list) * train_percent)
         f.writelines(line + '\n' for line in filename_list[:train_length])
+
     with open(osp.join(data_root, split_dir, 'val.txt'), 'w') as f:
         # select last 1/5 as train set
         f.writelines(line + '\n' for line in filename_list[train_length:])
@@ -89,21 +86,85 @@ class RUGDDataset(CustomDataset):
         assert osp.exists(self.img_dir) and self.split is not None
 
 
+@DATASETS.register_module()
+class OffRoadDataset(CustomDataset):
+    CLASSES = constants.offroad_classes
+    PALETTE = constants.offroad_palette
+
+    def __init__(self, split, **kwargs):
+        super().__init__(img_suffix='.png', seg_map_suffix='.png',
+                         split=split, **kwargs)
+        assert osp.exists(self.img_dir) and self.split is not None
+
+
+@DATASETS.register_module()
+class YamahaDataset(CustomDataset):
+    CLASSES = constants.yamaha_classes
+    PALETTE = constants.yamaha_palette
+
+    def __init__(self, split, **kwargs):
+        super().__init__(img_suffix='.jpg', seg_map_suffix='.png',
+                         split=split, **kwargs)
+        assert osp.exists(self.img_dir) and self.split is not None
+
+
+@DATASETS.register_module()
+class Rellis3dDataset(CustomDataset):
+    CLASSES = constants.rellis3d_classes
+    PALETTE = constants.rellis3d_palette
+
+    def __init__(self, split, **kwargs):
+        super().__init__(img_suffix='.jpg', seg_map_suffix='.png',
+                         split=split, **kwargs)
+        assert osp.exists(self.img_dir) and self.split is not None
+
+
+def get_dataset_type(dataset):
+    dict_dataset_type = {
+        'rugd': 'RUGDDataset',
+        'offroad': 'OffRoadDataset',
+        'yamaha': 'YamahaDataset'
+    }
+    return dict_dataset_type[dataset]
+
+
 """
 Since the given config is used to train PSPNet on the cityscapes dataset, 
 we need to modify it accordingly for our new dataset.  
 """
 
 
-def update_data_config(cfg, data_root, img_dir, ann_dir, dataset_type='RUGDDataset'):
+def update_data_config(cfg,
+                       data_root,
+                       img_dir,
+                       ann_dir,
+                       dataset_type='RUGDDataset',
+                       mean=None,
+                       std=None,
+                       **kwargs):
+    """
+
+    """
+    if mean is None:
+        mean = [123.675, 116.28, 103.53]
+
+    if std is None:
+        std = [58.395, 57.12, 57.375]
+
     cfg.dataset_type = dataset_type
     cfg.data_root = data_root
 
-    cfg.data.samples_per_gpu = 8
-    cfg.data.workers_per_gpu = 8
+    cfg.data.samples_per_gpu = kwargs.get("samples_per_gpu", 8)
+    cfg.data.workers_per_gpu = kwargs.get("workers_per_gpu", 8)
 
-    cfg.img_norm_cfg = dict(
-        mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
+    cfg.img_norm_cfg = dict(mean=mean,
+                            std=std,
+                            to_rgb=True)
+
+    # TODO: Study this, and change based on our dataset
+    #  mean and std. dev of the data
+    # cfg.img_norm_cfg = dict(
+    #     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 
     cfg.data.train.type = cfg.dataset_type
     cfg.data.train.data_root = cfg.data_root
