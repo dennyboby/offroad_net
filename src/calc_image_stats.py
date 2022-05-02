@@ -159,8 +159,8 @@ def get_image_data(data_root, img_dir="images"):
     data_path = os.path.join(data_root, img_dir)
 
     transform_img = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(256),
+        # transforms.Resize(256),
+        # transforms.CenterCrop(256),
         transforms.ToTensor(),
     ])
 
@@ -197,7 +197,7 @@ def batch_mean_std(data_root, img_dir="images", batch_size=2):
 
 
 def mean_std(loader):
-    images, lebels = next(iter(loader))
+    images, labels = next(iter(loader))
     # shape of images = [b,c,w,h]
     mean, std = images.mean([0, 2, 3]), images.std([0, 2, 3])
     return mean, std
@@ -206,7 +206,7 @@ def mean_std(loader):
 def main():
     list_datasets = [
         "yamaha_v1",
-        # "RUGD/RUGD_full",
+        "RUGD/RUGD_full",
     ]
     for data_root in list_datasets:
         image_data_loader = calc_mean_std_dev(data_root, img_dir="images")
@@ -215,6 +215,13 @@ def main():
         print(f"Dataset: {data_root}"
               f"\nmean: \n{mean}"
               f"\nstd_dev: \n{std}")
+
+        mean, std = mean_std(image_data_loader)
+        scaled_mean = 255 * mean
+        scaled_std_dev = 255 * std
+        print(f"Dataset: {data_root}"
+              f"\nscaled_mean: \n{scaled_mean}"
+              f"\nscaled_std_dev: \n{scaled_std_dev}")
 
 
 if __name__ == '__main__':
