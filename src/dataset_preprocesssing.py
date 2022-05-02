@@ -3,7 +3,10 @@ import os
 import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
-from imutils import paths
+# from imutils import paths
+import itertools
+from PIL import Image
+from joblib import Parallel, delayed
 
 import pandas as pd
 
@@ -24,105 +27,152 @@ rugd
 ------concrete
 """
 
-# os.path.join(
-#           path_till_new_ann,
-#           "gravel",
-#           file_name)
-#
-
-# os.makedirs(dir)
+LIST_CLASSES = ["gravel", "concrete", "asphalt", "rock_bed"]
 
 DICT_COLOR = {
-    "gravel": (0, 1, 2),
-    "concrete": (1, 2, 3)
+    "gravel": (255, 128, 0),
+    "concrete": (101, 101, 11),
+    "asphalt": (64, 64, 64),
+    "rock_bed": (102, 102, 0)
 }
 
 
-def process_img(file, img_class):
-    R, G, B = DICT_COLOR[img_class]
-    is_class_present, dest_path = process_image(file, img_class, R, G, B)
-    return is_class_present, dest_path
+# def process_img(file, img_class):
+#     is_class_present, dest_path = process_image(file, img_class, R, G, B)
+#     return is_class_present, dest_path
 
 
-def modify_and_track(list_files):
-    list_records = []
-    list_interest_class = ["gravel", "concrete"]
+def create_combo(list_a, list_b):
+    list_combo = list(itertools.product(list_a, list_b))
+    return list_combo
 
-    for index, file in enumerate(list_files):
-        for img_class in list_interest_class:
-            is_class_present, dest_path = process_img(file, img_class)  # for e.g. interest_class = "gravel"
-            dict_rec = {
-                "file": file,
-                "original_class": img_class,
-                "destination_path": dest_path,
-                "has_interest_class": is_class_present
-            }
-            list_records.append(dict_rec)
-    df_rec = pd.DataFrame.from_records(list_records)
+
+def change_segmentation(file_name, red, green, blue, dest_path):
+    img = cv.imread(file_name)
+    img, is_class_present = class_segmentor(img, red, green, blue)
+
+    # Save image only if the class is present
+    # if is_class_present:
+    #     cv.imwrite(dest_path, img)
+    cv.imwrite(dest_path, img)
+    return is_class_present
+
+
+def process_image(work_dir, data):
+    file_name, img_class = data
+    print(f"processing: {file_name}")
+    dest_path = os.path.join(work_dir, img_class, os.path.basename(file_name))
+    red, green, blue = DICT_COLOR[img_class]
+    is_class_present = change_segmentation(file_name, red, green, blue, dest_path)
+    dict_rec = {
+        "file_name": file_name,
+        "original_class": img_class,
+        "destination_path": dest_path,
+        "has_interest_class": is_class_present
+    }
+    return dict_rec
+
+
+def modify_and_track(list_files, work_dir, num_jobs=1):
+    list_tuples = create_combo(list_files, LIST_CLASSES)
+
+    print(f"starting jobs")
+    result = Parallel(n_jobs=num_jobs)(delayed(process_image)(work_dir, tup_x) for tup_x in list_tuples)
+    # records, process_ids = zip(*result)
+    records = result
+    # print(f"list_process_ids {len(process_ids)}: {process_ids}")
+
+    print(f"saving")
+    df_rec = pd.DataFrame.from_records(list(records))
+    print(df_rec.head())
     df_rec.to_csv(f"df_original_data.csv", index=False)
 
 
-def class_segmentor(img, R, G, B):
-    # img[:,:,2]=0 #R
-    # img[:,:,1]=0 #G
-    # img[:,:,0]=0 #B
+def get_unique(img_numpy):
+    list_unique_colors = []
+    # list_unique_colors = np.unique(
+    #     img_numpy.view(np.dtype((np.void, img_numpy.dtype.itemsize * img_numpy.shape[1])))
+    # ).view(img_numpy.dtype).reshape(-1, img_numpy.shape[1])
+
+    print(list_unique_colors)
+    return list_unique_colors
+
+def fast_color_changer():
+    im = Image.open('fig1.png')
+    data = np.array(im)
+
+    r1, g1, b1 = 0, 0, 0  # Original value
+    r2, g2, b2 = 255, 255, 255  # Value that we want to replace it with
+
+    red, green, blue = data[:, :, 0], data[:, :, 1], data[:, :, 2]
+    mask = (red == r1) & (green == g1) & (blue == b1)
+    data[:, :, :3][mask] = [r2, g2, b2]
+
+    im = Image.fromarray(data)
+    im.save('fig1_modified.png')
+
+
+def class_segmentor(img, red, green, blue):
+    list_uniq_colors = get_unique(img)
+    is_class_present = False
     for row in range(img.shape[0]):
         for col in range(img.shape[1]):
             a = img[row, col]
-            if (a[0] != B or a[1] != G or a[2] != R):
-                img[row, col][0] = 0
-                img[row, col][1] = 0
-                img[row, col][2] = 0
-            else:
+
+            if a[0] == blue and a[1] == green and a[2] == red:
                 img[row, col][0] = 255
                 img[row, col][1] = 255
                 img[row, col][2] = 255
+                is_class_present = True
 
-    return img
+            else:
+                img[row, col][0] = 0
+                img[row, col][1] = 0
+                img[row, col][2] = 0
+
+    return img, is_class_present
 
 
-def process_image(file, img_class, R, G, B):
-    """
-
-    """
-    img = cv.imread(file)
-    # class -> string: r,g,b
-    # check which class is present
-    # R, G, B = [101, 101, 11]
-    img = class_segmentor(img, R, G, B)
-    # TODO DERIVE destination path
-    name = 'G:\MS Courses\Deep Learning\Group Project\my\RUGD_annotations_combined_OffroadNet\img (' + str(
-        i) + ').png'
-    cv.imwrite(name, img)
-    # cv.imshow('img',img)
-    i += 1
-    # TODO add code to check whether given
-    is_class_present = check_class(img)
-    return is_class_present, name
+# def process_image(file, img_class, R, G, B):
+#     """
+#
+#     """
+#     img = cv.imread(file)
+#     # class -> string: r,g,b
+#     # check which class is present
+#     # R, G, B = [101, 101, 11]
+#     # img = class_segmentor(img, R, G, B)
+#     #  DERIVE destination path
+#     name = 'G:\MS Courses\Deep Learning\Group Project\my\RUGD_annotations_combined_OffroadNet\img (' + str(
+#         i) + ').png'
+#     cv.imwrite(name, img)
+#     # cv.imshow('img',img)
+#     i += 1
+#     #  add code to check whether given
+#     is_class_present = check_class(img)
+#     return is_class_present, name
 
 
 def get_paths(root_dir):
-    pass
+    # list_file_paths = [os.path.abspath(x) for x in os.listdir(root_dir)]
+    list_file_paths = [os.path.join(root_dir, x) for x in os.listdir(root_dir)]
+    return list_file_paths
+
+
+def main():
+    root_dir = "RUGD/RUGD_full/"
+    images_path = "annotations"
+    for class_x in LIST_CLASSES:
+        work_dir = os.path.join(root_dir, "new_annotations", class_x)
+        if not os.path.exists(work_dir):
+            os.makedirs(work_dir)
+    work_dir = os.path.join(root_dir, "new_annotations")
+    num_jobs = 10
+    list_image_paths = get_paths(os.path.join(root_dir, images_path))
+    # list_image_paths = list_image_paths[:2]
+    modify_and_track(list_image_paths, work_dir, num_jobs)
+    print(f"done.")
 
 
 if __name__ == '__main__':
-    # imagePaths=list(paths.list_images("G:\MS Courses\Deep Learning\Group Project\my\\RUGD_annotations_combined"))
-    root_dir = "../RUGD"
-    # ["../RUGD/x.png", "../RUGD/y.png"]
-    list_image_paths = get_paths(root_dir)
-    modify_and_track(list_image_paths)
-    # for i in range(1, 7437):
-    #     process_image(i)
-
-    # imagePaths=list(paths.list_images("G:\MS Courses\Deep Learning\Group Project\my\\RUGD_annotations_combined"))
-
-    # i=1
-    # for image in imagePaths:
-
-    #     img=cv.imread(image)
-    #     R,G,B=[102,102,0]
-    #     img=class_segmentor(img,R,G,B)
-    #     name='G:\MS Courses\Deep Learning\Group Project\my\RUGD_annotations_combined_OffroadNet\img ('+str(i)+').png'
-    #     cv.imwrite(name,img)
-    #     # cv.imshow('img',img)  
-    #     i+=1
+    main()

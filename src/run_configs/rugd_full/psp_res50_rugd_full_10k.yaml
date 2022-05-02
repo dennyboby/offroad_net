@@ -5,18 +5,18 @@ img_dir: 'images'
 ann_dir: 'labels'
 split_dir: 'splits'
 true_ann_dir: 'annotations'
-work_dir: './work_dirs/rugd_full/offroadnet_r101-d8'
-config_path: 'configs/offroadnet/offroadnet_r101-d8_512x1024_40k_cityscapes.py'
-pretrained_path: 'checkpoints/pspnet_r101-d8_512x1024_40k_cityscapes_20200604_232751-467e7cf4.pth'
+work_dir: './work_dirs/rugd_full_10k/pspnet_r50-d8'
+config_path: 'configs/pspnet/pspnet_r50-d8_512x1024_40k_cityscapes.py'
+pretrained_path: 'checkpoints/pspnet_r50-d8_512x1024_40k_cityscapes_20200605_003338-2966598c.pth'
 train_args:
-  max_iters: 1200
-  log_interval: 100
-  eval_interval: 200
-  checkpoint_interval: 600
+  max_iters: 10000
+  log_interval: 1000
+  eval_interval: 5000
+  checkpoint_interval: 5000
 img_scale : [688, 550]
 crop : [256, 256]
-mean : [102.9630, 102.9438, 102.3976]
-std : [69.8548, 70.3098, 70.9376]
+mean : [123.675, 116.28, 103.53]
+std : [58.395, 57.12, 57.375]
 img_ratios : [0.5, 0.75, 1.0, 1.25, 1.5, 1.75]
 ratio_range : [0.5, 2.0]
 cat_max_ratio : 0.75
