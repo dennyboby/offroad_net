@@ -42,7 +42,7 @@ Documentation: https://mmsegmentation.readthedocs.io/
 
 ## Introduction
 
-OffroadNet is based on the MMSegmentation library which is an open source semantic segmentation toolbox based on PyTorch and is a part of the OpenMMLab project.
+OffroadNet is based on the MMSegmentation library which is an open source semantic segmentation toolbox based on PyTorch and is a part of the OpenMMLab project. Details about the project can be found [here](https://github.com/dennyboby/offroad_net/tree/master/docs/document).
 
 The master branch works with **PyTorch 1.5+**.
 
